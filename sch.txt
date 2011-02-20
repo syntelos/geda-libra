@@ -1,0 +1,98 @@
+
+Overview
+
+    This tool will generate or edit a gEDA GSCHEM schematic from a
+    Schematic Table, adding net connectors to component pins.
+
+    The editing process is derived from the generation process,
+    permitting the preservation of unique information.  
+
+    This tool works in terms of net connectors attached to component
+    pins.  Therefore in editing the tool will drop net connectors not
+    described in the Schematic Table.
+
+
+Schematic Table
+
+    The process is driven by a CSV file named '<Schematic>.csv'.
+
+    The CSV file starts with a Meta Data segment, followed by a Table
+    Headline and then Table Data.
+
+    Meta Data
+
+	The following Meta Data fields may be inserted before the
+	Table Headline.  Only the "Size" field is required.
+
+	    Title
+	    Author
+	    Logo
+	    Size
+
+	These are rows inserted before the Table headline with these
+	names in the first column and corresponding values in the
+	second column of the CSV file.
+
+	The "Logo" is a gEDA/GSCHEM symbol inserted to the right of
+	the title near the right margin.  The value is the basic file
+	name with dot "sym" extension, but not including any path
+	information.
+
+	The "Size" is a letter 'A' - 'Z' identifying an installed
+	title block.
+
+    Table Headline
+
+        The column naming is generally as follows.
+
+            Component,Pin,Type,Signal
+
+        A Table Headline is required.  It is recognized as not Meta
+        Data and before Table Data.
+
+        Additional columns are ignored by this tool.
+
+    Table Data
+
+        The value of the Component column is a name.  This name is the
+        symbol file name without the trailing dot "sym" filename
+        extension.
+
+	The value of the Pin column is a Pin Number from within the
+	component (symbol).
+
+	The value of the Type column is one of the following connector
+	types.
+
+	    in
+	    out
+	    io
+	    clk
+	    V<id>
+
+        Where <id> is one of "cc", "dd", "ee", "ss" or related.
+        Connector types match component pin types.
+
+	When present, the Signal column value is employed as the NET
+	Signal Name.  In most cases, the Signal column value is
+	implied by the Type column value.
+
+
+Invocation
+
+        java -jar sch.jar -i schematic.csv -s schematic.sch
+
+Installation
+
+     Installed title blocks are found in
+
+        {GEDA_HOME}/sym/titleblock/title-bordered-D.sym
+
+     where GEDA_HOME is one of
+
+        /usr/share/gEDA
+
+     or
+        /usr/local/share/gEDA 
+
+     or identified by an environment variable named GEDA_HOME.

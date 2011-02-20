@@ -1,0 +1,29 @@
+"Part","HMC5843",,,
+"Package","LPCC_20_4x4mm",,,
+"Layout","lbrt:5/5/5/5",,,
+"Description","Three axis digital magnetometer",,,
+"Documentation","http://www.honeywell.com/sites/servlet/com.merx.npoint.servlets.DocumentServlet?docid=D9F58D4D3-43D1-12BF-514A-FB1491510709",,,
+"Author","John Pritchard <jdp@ulsf.net>",,,
+"License","GPL",,,
+"Footprint","US16",,,
+"Number","Name","Type","Buffer","Description"
+1,"SCL","clk","TTL","Serial Clock – I2C Master/Slave Clock"
+2,"SDAP","io","TTL","Serial Data pull up 50k to Vdd"
+3,"SCLP","clk","TTL","Serial Clock pull up 50k to Vdd"
+4,"NC","pas",,"No connection"
+5,"NC","pas",,"No connection"
+6,"OFFP","out","Analog","Offset strap positive"
+7,"OFFN","out","Analog","Offset strap negative"
+8,"NC","pas",,"No connection"
+9,"SETP","in","Analog","Set/Reset strap positive – S/R capacitor C2 connection"
+10,"SETN","in","Analog","Set/Reset strap negative – test point"
+11,"SVDD","pwr","Power","Sensor Supply – test point"
+12,"DGND","pwr","Power","Digital Supply Return"
+13,"C1","in","Analog","Resevoir Capacitor (C1) connection"
+14,"SETC","out","Analog","S/R Capacitor (C2) connection – driver side"
+15,"DVDD","pwr","Power","Digital Positive Supply"
+16,"VREN","io","TTL","Voltage Regulator Enable (GND Dual Supply, AVDD Single Supply)"
+17,"AGND","pwr","Power","Analog return"
+18,"AVDD","pwr","Power","Analog supply"
+19,"DRDY","io","TTL","Data ready – test point"
+20,"SDA","io","TTL","Serial Data – I2C Master/Slave data"

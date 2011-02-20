@@ -1,0 +1,17 @@
+"Part","DS1007",,,
+"Package","uSOP118",,,
+"Layout","lbrt:4/0/4/0",,,
+"Description","Programmable oscillator",,,
+"Documentation","http://www.honeywell.com/",,,
+"Author","John Pritchard <jdp@ulsf.net>",,,
+"License","GPL",,,
+"Footprint","SO8",,,
+"Number","Name","Type","Buffer","Description"
+1,"OUT1","out","Analog","Main oscillator output"
+2,"OUT2","out","Analog","Reference output"
+3,"VCC","pwr","Power","Supply"
+4,"GND","pwr","Power","Return"
+5,"CTRL0","in","TTL","Control for OUT1"
+6,"CTRL1","in","TTL","Control for OUT2"
+7,"SDA","io","TTL","Serial Data I/O"
+8,"SCL","clk","TTL","Serial Clock"

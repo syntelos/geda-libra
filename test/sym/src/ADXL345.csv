@@ -1,0 +1,27 @@
+"Part","ADXL345",,,
+"Package",,,,
+"Layout","lbrt:6/1/6/1",,,
+"Description","Three axis digital accelerometer",,,
+"Documentation","http://www.analog.com/static/imported-files/data_sheets/ADXL345.pdf",,,
+"Author","John Pritchard <jdp@ulsf.net>",,,
+"License","GPL",,,
+"Footprint","US14_R",,,
+"Number","Name","Type","Buffer","Description"
+1,"VDD","pwr","Power","Digital Supply"
+2,"GND","pwr","Power","Return"
+3,"RESERVED","pas",,
+4,"GND","pwr","Power","Return"
+5,"GND","pwr","Power","Return"
+6,"VS","pwr","Power","Supply"
+7,"\_CS\_","io","TTL","Chip Select"
+8,"INT1","out","TTL","Interrupt 1 output"
+9,"INT2","out","TTL","Interrupt 2 output"
+10,"NC","pas",,
+11,"RESERVED","pas",,
+12,"SDO","out","TTL","Serial data output"
+12,"ALT ADDR","io","TTL","Alt I2C address select"
+13,"SDO","out","TTL","Serial Data I2C"
+13,"SDA","in","TTL","Serial Input SPI 4"
+13,"SDIO","io","TTL","Serial Data I/O SPI 3"
+14,"SCL","clk","TTL","Serial Clock"
+14,"SCLK","clk","TTL","Serial Clock"

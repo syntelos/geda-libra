@@ -1,0 +1,106 @@
+Usage
+
+    Sym -i symbol.csv [options]
+
+Description
+
+    Produce gEDA symbol from pin description table.
+
+  Input table
+
+    The input argument is a CSV file (as from TI), for example
+    in the following.
+
+        Part,LM3S9B90,,,
+        Package,100LQFP,,,
+        Number,Name,Type,Buffer,Description
+        1,PE7,I/O,TTL,GPIO port E bit 7.
+        1,AIN0,I,Analog,Analog-to-digital converter input 0.
+        1,C2o,O,TTL,Analog comparator 2 output.
+
+    This program only employs the first three columns: Number, 
+    Name and Type.  This program ignores lines or pin numbers 
+    starting with '#'.
+
+    The input CSV should be expanded with metadata, as in the
+    following example.  This is required for '-s' output.
+
+        Part,LM3S9B90,,,
+        Package,100LQFP,,,
+        Layout,lbrt:25/25/25/25,,,
+        Description,Stellaris ARM Cortex-M3,,,
+        Documentation,http://www.ti.com/lit/gpn/lm3s9b90,,,
+        Author,John Pritchard <jdp@ulsf.net>,,,
+        License,GPL,,,
+        Footprint,LQFP100_14,,,
+        Number,Name,Type,Buffer,Description
+        1,PE7,I/O,TTL,GPIO port E bit 7.
+        1,AIN0,I,Analog,Analog-to-digital converter input 0.
+        1,C2o,O,TTL,Analog comparator 2 output.
+
+    The input CSV pins may be ordered by number, ascending
+    from one to N.  Multiple records for each number are
+    merged onto one generalized pin for output.
+
+  Meta data
+
+    The first value found is employed.  Additional definitions
+    are ignored.  Command line input overrides file input as
+    the primary definition.
+
+  Pin types
+
+    Pin types may be gEDA types or TI types.
+
+    The TI types include 'I', 'O', and 'I/O' for Buffer 'TTL'
+    or 'Analog', and '-' for Buffer 'Power'.
+
+  Pin layout
+
+    Pin layout is defined in a counter-clockwise sequence
+    starting from TOP, LEFT, BOTTOM or RIGHT sides via the
+    case insensitive acronym TLBR, LBRT, BRTL, and RTLB.
+
+    Pin layout is further described in a number of pins 
+    per side, as in the following example.
+
+        lbrt:25/25/25/25
+
+Options
+
+  Output
+
+    When both outputs are employed, tragesym is not run.
+
+    -t symbol.src   Write "tragesym source" output to file; then
+                    try running 'tragesym symbol.src symbol.sym'.
+
+    -s symbol.sym   Write gEDA symbol output to file.  Requires
+                    full metadata in expanded CSV format.
+
+  Meta
+
+    This info replaces that from the input CSV file.
+
+    -r o:l/b/r/t    Number of pins on each side in CCW order, o:
+                    lbrt, brtl, rtlb, tlbr.
+
+    -d 'desc'       Description string.
+
+    -u 'url'        Documentation URL string.
+
+    -a author       Author string.
+
+    -l lic          Distribution and use license name.
+
+Bugs
+
+  License
+
+    Incomplete handling of license needs additional use and
+    distribution distinction cases.
+
+  Pins
+
+    Polarized pins not implemented for '-s'.
+

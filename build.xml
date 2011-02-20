@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="libra" default="all">
+
+  <property name="src" location="src"/>
+  <property name="lib" location="lib"/>
+  <property name="bin" location="bin"/>
+
+
+  <property name="sym.target.jar" value="sym.jar"/>
+  <property name="sch.target.jar" value="sch.jar"/>
+
+
+  <target name="all">
+
+    <antcall target="compile"/>
+    <delete>
+      <fileset dir=".">
+        <include name="*.jar"/>
+      </fileset>
+    </delete>
+
+    <antcall target="sym"/>
+    <antcall target="sch"/>
+
+    <delete>
+      <fileset dir="${bin}">
+        <include name="**/*.class"/>
+      </fileset>
+    </delete>
+
+  </target>
+
+  <target name="compile">
+
+    <mkdir dir="${bin}"/>
+
+    <javac srcdir="${src}" destdir="${bin}" debug="true" includeantruntime="false">
+
+      <include name="**/*.java"/>
+    </javac>
+
+  </target>
+
+  <target name="sym" depends="compile">
+
+    <jar jarfile="${sym.target.jar}" basedir="${bin}" manifest="${src}/libra/sym/Manifest.mf" />
+  </target>
+
+  <target name="sch" depends="compile">
+
+    <jar jarfile="${sch.target.jar}" basedir="${bin}" manifest="${src}/libra/sch/Manifest.mf" />
+  </target>
+
+  <target name="clean" description="Drop bin directory">
+
+    <delete dir="${bin}"/>
+
+  </target>
+
+</project>
