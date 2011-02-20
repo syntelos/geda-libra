@@ -1,0 +1,12 @@
+
+Tools for generating gEDA symbols and schematics in a spreadsheet table
+driven project.
+
+    sym
+
+        Generate symbols from tables.  See sym.txt
+
+    sch
+
+        In development, see sch.txt
+

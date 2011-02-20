@@ -21,25 +21,25 @@ Schematic Table
 
     Meta Data
 
-	The following Meta Data fields may be inserted before the
-	Table Headline.  Only the "Size" field is required.
+        The following Meta Data fields may be inserted before the
+        Table Headline.  Only the "Size" field is required.
 
-	    Title
-	    Author
-	    Logo
-	    Size
+            Title
+            Author
+            Logo
+            Size
 
-	These are rows inserted before the Table headline with these
-	names in the first column and corresponding values in the
-	second column of the CSV file.
+        These are rows inserted before the Table headline with these
+        names in the first column and corresponding values in the
+        second column of the CSV file.
 
-	The "Logo" is a gEDA/GSCHEM symbol inserted to the right of
-	the title near the right margin.  The value is the basic file
-	name with dot "sym" extension, but not including any path
-	information.
+        The "Logo" is a gEDA/GSCHEM symbol inserted to the right of
+        the title near the right margin.  The value is the basic file
+        name with dot "sym" extension, but not including any path
+        information.
 
-	The "Size" is a letter 'A' - 'Z' identifying an installed
-	title block.
+        The "Size" is a letter 'A' - 'Z' identifying an installed
+        title block.
 
     Table Headline
 
@@ -58,24 +58,24 @@ Schematic Table
         symbol file name without the trailing dot "sym" filename
         extension.
 
-	The value of the Pin column is a Pin Number from within the
-	component (symbol).
+        The value of the Pin column is a Pin Number from within the
+        component (symbol).
 
-	The value of the Type column is one of the following connector
-	types.
+        The value of the Type column is one of the following connector
+        types.
 
-	    in
-	    out
-	    io
-	    clk
-	    V<id>
+            in
+            out
+            io
+            clk
+            V<id>
 
         Where <id> is one of "cc", "dd", "ee", "ss" or related.
         Connector types match component pin types.
 
-	When present, the Signal column value is employed as the NET
-	Signal Name.  In most cases, the Signal column value is
-	implied by the Type column value.
+        When present, the Signal column value is employed as the NET
+        Signal Name.  In most cases, the Signal column value is
+        implied by the Type column value.
 
 
 Invocation
