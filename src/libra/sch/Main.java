@@ -79,28 +79,6 @@ public class Main {
 	}
 	if (null != inf && null != sf){
 	    try {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(inf),"US-ASCII"));
-		boolean once = true;
-		try {
-		    String line;
-		    while (null != (line = in.readLine())){
-			Input input;
-			try {
-			    input = new Input(line,once);
-			    if (input.isHeadline())
-				once = false;
-
-			}
-			catch (RuntimeException skip){
-			    continue;
-			}
-
-		    }
-		}
-		finally {
-		    in.close();
-		}
-
 
 		System.exit(0);
 	    }

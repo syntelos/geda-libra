@@ -1,6 +1,9 @@
 package libra;
 
+import java.io.File ;
+import java.io.FileOutputStream ;
 import java.io.IOException ;
+import java.io.OutputStream ;
 import java.io.PrintStream ;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,13 +12,15 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
- * 
+ * A component.
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
 public class Symbol
     extends Attribute
 {
+    public final static String Vdate = "20100214", Vnumber = "2";
+
     public final static int Debug ;
     static {
 	int debug = 0;
@@ -29,6 +34,32 @@ public class Symbol
 	}
 	Debug = debug;
     }
+
+    public enum Row {
+	Part, Package, Layout, Description, Documentation, Author, License, Footprint, Path,
+	Headline, 
+	Pin;
+
+	public final static Row For(String arg, boolean once){
+	    if (once){
+		try {
+		    return Row.valueOf(arg);
+		}
+		catch (RuntimeException exc){
+		    try {
+			Integer.parseInt(arg);
+			return Row.Pin;
+		    }
+		    catch (NumberFormatException nfx){
+			return Row.Headline;
+		    }
+		}
+	    }
+	    else
+		return Row.Pin;
+	}
+    }
+
 
     public Layout layout;
 
@@ -44,26 +75,71 @@ public class Symbol
     private Iterable<Rectangle> intersectsI;
 
 
-    public Symbol(Layout layout, String a, String d, String u, String l){
-	super(Attribute.Type.B);
-	this.layout = layout;
-	this.author = a;
-	this.description = d;
-	this.documentation = u;
-	this.license = l;
-	this.version = DF.format(new Date());
-    }
-    public Symbol(Layout layout){
-	super(Attribute.Type.B);
-	this.layout = layout;
-	this.version = DF.format(new Date());
-    }
     public Symbol(){
 	super(Attribute.Type.B);
 	this.version = DF.format(new Date());
     }
+    public Symbol(File file)
+	throws IOException
+    {
+	this();
+	CSV csv = new CSV(file);
+	boolean once = true;
+	for (String[] line: csv.content){
+	    once = this.add(line,once);
+	}
+    }
 
 
+    public void write(File sym)
+	throws IOException
+    {
+	OutputStream out = null;
+	try {
+	    out = this.write(new FileOutputStream(sym));
+	}
+	finally {
+	    if (null != out)
+		out.close();
+	}
+    }
+    public OutputStream write(OutputStream sym)
+	throws IOException
+    {
+	return this.write(new PrintStream(sym));
+    }
+    public PrintStream write(PrintStream out)
+	throws IOException
+    {
+
+	if (this.layout()){
+
+	    if (this.markup()){
+
+		out.printf("v %s %s%n",Vdate,Vnumber);
+
+		out.println(this);
+
+		for (Pin pin: this.pins){
+
+		    out.println(pin);
+		}
+		return out;
+	    }
+	    else
+		throw new IllegalStateException("Missing layout.");
+	}
+	else if (this.markup()){
+
+	    out.printf("v %s %s%n",Vdate,Vnumber);
+
+	    out.println(this);
+
+	    return out;
+	}
+	else
+	    throw new IllegalStateException("Missing layout.");
+    }
     public int count(){
 	if (null != this.pins)
 	    return this.pins.length;
@@ -89,6 +165,68 @@ public class Symbol
 	    return p.getPosition(this.layout);
 	else
 	    return Layout.Position.L;
+    }
+    public boolean add(String[] line, boolean once){
+
+	final Row row = Row.For(line[0],once);
+
+	final String value;
+	if (1 < line.length)
+	    value = line[1];
+	else
+	    value = null;
+
+	switch(row){
+	case Part:
+	    if (null == this.part)
+		this.part = value;
+	    return true;
+	case Package:
+	    if (null == this.pack)
+		this.pack = value;
+	    return true;
+	case Layout:
+	    if (null == this.layout)
+		this.layout = new Layout(value);
+	    return true;
+	case Description:
+	    if (null == this.description)
+		this.description = value;
+	    return true;
+	case Documentation: 
+	    if (null == this.documentation)
+		this.documentation = value;
+	    return true;
+	case Author:
+	    if (null == this.author)
+		this.author = value;
+	    return true;
+	case License:
+	    if (null == this.license)
+		this.license = value;
+	    return true;
+	case Footprint:
+	    if (null == this.footprint)
+		this.footprint = value;
+	    return true;
+	case Headline:
+	    return false;
+	case Pin:
+	    if (null == this.pins)
+		this.add(new Pin(line));
+	    else {
+		Pin last = (Pin)this.pins[this.pins.length-1];
+		if (!last.add(line))
+		    this.add(new Pin(line));
+	    }
+	    return false;
+	case Path:
+	    if (null == this.path)
+		this.path = Tail(line);
+	    return true;
+	default:
+	    throw new Error(row.name());
+	}
     }
     public void add(Pin p){
 
@@ -393,4 +531,18 @@ public class Symbol
 
     public final static DateFormat DF = new SimpleDateFormat("yyyyMMdd");
 
+    public final static String Tail(String[] terms){
+	final int count = (terms.length-1);
+	if (0 < count){
+	    StringBuilder strbuf = new StringBuilder();
+	    strbuf.append(terms[1]);
+	    for (int cc = 2; cc < count; cc++){
+		strbuf.append(',');
+		strbuf.append(terms[cc]);
+	    }
+	    return strbuf.toString();
+	}
+	else
+	    return null;
+    }
 }

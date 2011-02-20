@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.StringTokenizer;
 
 /**
- * 
+ * A pin as used by {@link Symbol}.
  * 
  * <h3>Implementation notes</h3>
  * 
@@ -84,8 +84,40 @@ public class Pin
 	this.sequence = (this.number - 1);
 	this.inverted = inverted;
     }
+    public Pin(String[] line){
+	super(Attribute.Type.P);
+	this.number = Integer.parseInt(line[0]);
+	this.sequence = (this.number - 1);
+	this.namein = new String[]{
+	    line[1]
+	};
+	this.inverted = this.namein[0].startsWith("\\_")&&this.namein[0].endsWith("\\_");
+	this.typein = new Type[]{
+	    Type.For(line[2])
+	};
+    }
 
 
+
+    public boolean add(String[] line){
+	int pin = Integer.parseInt(line[0]);
+	if (this.number == pin){
+
+	    if (1 < line.length){
+
+		this.namein = Add(this.namein,line[1]);
+
+		if (2 < line.length){
+
+		    this.typein = Type.Add(this.typein,Type.For(line[2]));
+		}
+	    }
+
+	    return true;
+	}
+	else
+	    return false;
+    }
     public String getName(){
 	if (null == this.name){
 	    StringBuilder strbuf = new StringBuilder();

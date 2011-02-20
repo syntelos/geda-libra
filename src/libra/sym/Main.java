@@ -1,14 +1,8 @@
 package libra.sym;
 
-import libra.Layout;
+import libra.Symbol;
 
-import java.io.BufferedReader ;
 import java.io.File ;
-import java.io.FileInputStream ;
-import java.io.FileOutputStream ;
-import java.io.InputStreamReader ;
-import java.io.IOException ;
-import java.io.PrintStream ;
 
 /**
  * Read pin table for symbol generation.
@@ -38,12 +32,8 @@ public class Main {
 	System.out.println("        1,AIN0,I,Analog,Analog-to-digital converter input 0.");
 	System.out.println("        1,C2o,O,TTL,Analog comparator 2 output.");
 	System.out.println();
-	System.out.println("    This program only employs the first three columns: Number, ");
-	System.out.println("    Name and Type.  This program ignores lines or pin numbers ");
-	System.out.println("    starting with '#'.");
-	System.out.println();
-	System.out.println("    The input CSV should be expanded with metadata, as in the");
-	System.out.println("    following example.  This is required for '-s' output.");
+	System.out.println("    The input CSV is expanded with metadata, as in the");
+	System.out.println("    following example.");
 	System.out.println();
 	System.out.println("        Part,LM3S9B90,,,");
 	System.out.println("        Package,100LQFP,,,");
@@ -61,6 +51,10 @@ public class Main {
 	System.out.println("    The input CSV pins may be ordered by number, ascending");
 	System.out.println("    from one to N.  Multiple records for each number are");
 	System.out.println("    merged onto one generalized pin for output.");
+	System.out.println();
+	System.out.println("    This program only employs the first three columns: Number, ");
+	System.out.println("    Name and Type.  This program ignores lines or pin numbers ");
+	System.out.println("    starting with '#'.");
 	System.out.println();
 	System.out.println("  Meta data");
 	System.out.println();
@@ -90,28 +84,8 @@ public class Main {
 	System.out.println();
 	System.out.println("  Output");
 	System.out.println();
-	System.out.println("    When both outputs are employed, tragesym is not run.");
-	System.out.println();
-	System.out.println("    -t symbol.src   Write \"tragesym source\" output to file; then");
-	System.out.println("                    try running 'tragesym symbol.src symbol.sym'.");
-	System.out.println();
 	System.out.println("    -s symbol.sym   Write gEDA symbol output to file.  Requires");
 	System.out.println("                    full metadata in expanded CSV format.");
-	System.out.println();
-	System.out.println("  Meta");
-	System.out.println();
-	System.out.println("    This info replaces that from the input CSV file.");
-	System.out.println();
-	System.out.println("    -r o:l/b/r/t    Number of pins on each side in CCW order, o:");
-	System.out.println("                    lbrt, brtl, rtlb, tlbr.");
-	System.out.println();
-	System.out.println("    -d 'desc'       Description string.");
-	System.out.println();
-	System.out.println("    -u 'url'        Documentation URL string.");
-	System.out.println();
-	System.out.println("    -a author       Author string.");
-	System.out.println();
-	System.out.println("    -l lic          Distribution and use license name.");
 	System.out.println();
 	System.out.println("Bugs");
 	System.out.println();
@@ -123,7 +97,7 @@ public class Main {
 	System.exit(1);
     }
     public enum Opt {
-	A, D, H, I, L, R, S, T, U;
+	H, I, S;
 
 	public static Opt For(String arg){
 	    while (0 < arg.length() && '-' == arg.charAt(0))
@@ -138,32 +112,12 @@ public class Main {
 	}
     }
     public static void main(String[] argv){
-	File inf = null, tf = null, sf = null;
-	Layout layout = null;
-	String author = null, description = null, documentation = null, license = null;
+	File inf = null, sf = null;
 
 	for (int cc = 0, argc = argv.length; cc < argc; cc++){
 	    String arg = argv[cc];
 	    Opt opt = Opt.For(arg);
 	    switch(opt){
-	    case A:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    author = arg;
-		}
-		else
-		    Usage();
-		break;
-	    case D:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    description = arg;
-		}
-		else
-		    Usage();
-		break;
 	    case H:
 		Usage();
 		break;
@@ -180,47 +134,11 @@ public class Main {
 		else
 		    Usage();
 		break;
-	    case L:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    license = arg;
-		}
-		else
-		    Usage();
-		break;
-	    case R:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    layout = new Layout(arg);
-		}
-		else
-		    Usage();
-		break;
 	    case S:
 		cc += 1;
 		if (cc < argc){
 		    arg = argv[cc];
 		    sf = new File(arg);
-		}
-		else
-		    Usage();
-		break;
-	    case T:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    tf = new File(arg);
-		}
-		else
-		    Usage();
-		break;
-	    case U:
-		cc += 1;
-		if (cc < argc){
-		    arg = argv[cc];
-		    documentation = arg;
 		}
 		else
 		    Usage();
@@ -231,71 +149,17 @@ public class Main {
 	}
 	if (null != inf){
 	    try {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(inf),"US-ASCII"));
-		Sym symbol = null;
-		try {
-		    String line;
-		    while (null != (line = in.readLine())){
-			Input input;
-			try {
-			    input = new Input(line);
-			}
-			catch (RuntimeException skip){
-			    continue;
-			}
-			if (null == symbol)
-			    symbol = new Sym(layout,input,author,description,documentation,license);
-			else
-			    symbol.add(input);
-		    }
-		}
-		finally {
-		    in.close();
-		}
-		/*
-		 */
-		if (null != tf){
-		    Tragesym out = new Tragesym(tf);
-		    try {
-			out.write(symbol);
-			System.err.printf("Wrote '%s'%n",tf);
-		    }
-		    finally {
-			out.close();
-		    }
-		    if (null == sf){
-			try {
-			    File tsf = out.run();
-			    System.err.printf("Wrote '%s'%n",tsf);
-			}
-			catch (Exception exc){
-			    System.err.printf("Warning: error running 'tragesym' (%s)%n",exc.toString());
-			}
-		    }
-		}
-		/*
-		 */
-		if (null != sf){
-		    Geda out = new Geda(sf);
-		    try {
-			out.write(symbol);
-			System.err.printf("Wrote '%s'%n",sf);
-		    }
-		    finally {
-			out.close();
-		    }
-		}
-		/*
-		 */
-		if (null == tf && null == sf){
+		Symbol symbol = new Symbol(inf);
 
-		    Geda out = new Geda(System.out);
-		    try {
-			out.write(symbol);
-		    }
-		    finally {
-			out.close();
-		    }
+		if (null != sf){
+
+		    symbol.write(sf);
+
+		    System.err.printf("Wrote '%s'%n",sf);
+		}
+		else {
+
+		    symbol.write(System.out);
 		}
 		System.exit(0);
 	    }
