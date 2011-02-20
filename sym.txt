@@ -100,7 +100,3 @@ Bugs
     Incomplete handling of license needs additional use and
     distribution distinction cases.
 
-  Pins
-
-    Polarized pins not implemented for '-s'.
-

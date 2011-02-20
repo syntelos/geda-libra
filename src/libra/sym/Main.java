@@ -120,10 +120,6 @@ public class Main {
 	System.out.println("    Incomplete handling of license needs additional use and");
 	System.out.println("    distribution distinction cases.");
 	System.out.println();
-	System.out.println("  Pins");
-	System.out.println();
-	System.out.println("    Polarized pins not implemented for '-s'.");
-	System.out.println();
 	System.exit(1);
     }
     public enum Opt {
