@@ -18,12 +18,8 @@ Description
         1,AIN0,I,Analog,Analog-to-digital converter input 0.
         1,C2o,O,TTL,Analog comparator 2 output.
 
-    This program only employs the first three columns: Number, 
-    Name and Type.  This program ignores lines or pin numbers 
-    starting with '#'.
-
-    The input CSV should be expanded with metadata, as in the
-    following example.  This is required for '-s' output.
+    The input CSV is expanded with metadata, as in the
+    following example.
 
         Part,LM3S9B90,,,
         Package,100LQFP,,,
@@ -41,6 +37,10 @@ Description
     The input CSV pins may be ordered by number, ascending
     from one to N.  Multiple records for each number are
     merged onto one generalized pin for output.
+
+    This program only employs the first three columns: Number, 
+    Name and Type.  This program ignores lines or pin numbers 
+    starting with '#'.
 
   Meta data
 
@@ -70,28 +70,8 @@ Options
 
   Output
 
-    When both outputs are employed, tragesym is not run.
-
-    -t symbol.src   Write "tragesym source" output to file; then
-                    try running 'tragesym symbol.src symbol.sym'.
-
     -s symbol.sym   Write gEDA symbol output to file.  Requires
                     full metadata in expanded CSV format.
-
-  Meta
-
-    This info replaces that from the input CSV file.
-
-    -r o:l/b/r/t    Number of pins on each side in CCW order, o:
-                    lbrt, brtl, rtlb, tlbr.
-
-    -d 'desc'       Description string.
-
-    -u 'url'        Documentation URL string.
-
-    -a author       Author string.
-
-    -l lic          Distribution and use license name.
 
 Bugs
 
