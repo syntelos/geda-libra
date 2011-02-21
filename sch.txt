@@ -45,7 +45,7 @@ Schematic Table
 
         The column naming is generally as follows.
 
-            Component,Pin,Type,Signal
+            Component,Pin,Signal
 
         A Table Headline is required.  It is recognized as not Meta
         Data and before Table Data.
@@ -61,21 +61,7 @@ Schematic Table
         The value of the Pin column is a Pin Number from within the
         component (symbol).
 
-        The value of the Type column is one of the following connector
-        types.
-
-            in
-            out
-            io
-            clk
-            V<id>
-
-        Where <id> is one of "cc", "dd", "ee", "ss" or related.
-        Connector types match component pin types.
-
-        When present, the Signal column value is employed as the NET
-        Signal Name.  In most cases, the Signal column value is
-        implied by the Type column value.
+        The value of the Signal column value is the NET Signal Name.
 
 
 Invocation

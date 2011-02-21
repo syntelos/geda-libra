@@ -13,7 +13,7 @@ public class CSV
     extends Object
 {
 
-    protected final String[][] content;
+    public final String[][] content;
 
 
     public CSV(File file)
@@ -94,7 +94,7 @@ public class CSV
 	    if (0 < count){
 		String[] terms = new String[count];
 		for (int cc = 0; cc < count; cc++){
-		    terms[cc] = strtok.nextToken();
+		    terms[cc] = strtok.nextToken().trim();
 		}
 		return terms;
 	    }

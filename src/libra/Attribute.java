@@ -13,8 +13,24 @@ public class Attribute
     extends Rectangle
     implements Iterable<Attribute>
 {
+    public final static String Vdate = "20100214", Vnumber = "2";
+
+    public final static int Debug ;
+    static {
+	int debug = 0;
+	try {
+	    String config = System.getProperty("Debug");
+	    if (null != config){
+		debug = Integer.parseInt(config);
+	    }
+	}
+	catch (Exception exc){
+	}
+	Debug = debug;
+    }
+
     public enum Type {
-	B, P, T, H, V;
+	B, C, P, T, H, V;
     }
     public enum Show {
 	NameValue, Value, Name;
@@ -43,6 +59,8 @@ public class Attribute
     public int capstyle, dashtype, dashlength = -1, dashspace = -1, filltype;
     public int fillwidth = -1, angle1 = -1, pitch1 = -1, angle2 = -1, pitch2 = -1;
     public int angle, alignment, num_lines = 1;
+    public int selectable, mirror;
+    public String basename;
     public Show show = Show.NameValue;
 
     public Attribute[] children;
@@ -389,19 +407,27 @@ public class Attribute
 				   " %d %d %d"+
 				   " %d %d %d",
 				   this.type,
-				   this.x1,              this.y1,         this.width,   this.height,
-				   this.color.ordinal(), this.linewidth,  this.capstyle,
-				   this.dashtype,        this.dashlength, this.dashspace,
-				   this.filltype,        this.fillwidth,  this.angle1,
-				   this.pitch1,          this.angle2,     this.pitch2);
+				   this.x1,              this.y1,              this.width,           this.height,
+				   this.color.ordinal(), this.linewidth,       this.capstyle,
+				   this.dashtype,        this.dashlength,      this.dashspace,
+				   this.filltype,        this.fillwidth,       this.angle1,
+				   this.pitch1,          this.angle2,          this.pitch2);
+	    break;
+	case C:
+	    parent = String.format("%s"+
+				   " %d %d"+
+				   " %d %d %d %s",
+				   this.type,
+				   this.x1,              this.y1, 
+				   this.selectable,      this.angle,           this.mirror,          this.basename);
 	    break;
 	case P:
 	    parent = String.format("%s"+
 				   " %d %d %d %d"+
 				   " %d %d %d",
 				   this.type,
-				   this.x1,              this.y1,       this.x2,      this.y2,
-				   this.color.ordinal(), this.pintype,  this.whichend);
+				   this.x1,              this.y1,              this.x2,              this.y2,
+				   this.color.ordinal(), this.pintype,         this.whichend);
 	    break;
 	case T:
 	    parent = String.format("%s"+
@@ -412,8 +438,8 @@ public class Attribute
 				   "%n%s",
 				   this.type,
 				   this.x1,  this.y1,  
-				   this.color.ordinal(), this.textsize,  this.visibility,
-				   this.show.ordinal(),  this.angle,  this.alignment,
+				   this.color.ordinal(), this.textsize,        this.visibility,
+				   this.show.ordinal(),  this.angle,           this.alignment,
 				   this.num_lines,
 				   this.text());
 	    break;
@@ -426,10 +452,10 @@ public class Attribute
 				   " %d"+
 				   "%n%s",
 				   this.type,
-				   this.color.ordinal(), this.linewidth,  this.capstyle,
-				   this.dashtype,        this.dashlength,  this.dashspace,
-				   this.filltype,        this.fillwidth,  this.angle1, 
-				   this.pitch1,          this.angle2,     this.pitch2, 
+				   this.color.ordinal(), this.linewidth,       this.capstyle,
+				   this.dashtype,        this.dashlength,      this.dashspace,
+				   this.filltype,        this.fillwidth,       this.angle1, 
+				   this.pitch1,          this.angle2,          this.pitch2, 
 				   this.num_lines,
 				   this.value);
 	    break;
@@ -441,11 +467,11 @@ public class Attribute
 				   " %d %d %d"+
 				   " %d %d %d",
 				   this.type,
-				   this.x1,              this.y1,         this.radius,
-				   this.color.ordinal(), this.linewidth,  this.capstyle,
-				   this.dashtype,        this.dashlength, this.dashspace,
-				   this.filltype,        this.fillwidth,  this.angle1,
-				   this.pitch1,          this.angle2,     this.pitch2);
+				   this.x1,              this.y1,              this.radius,
+				   this.color.ordinal(), this.linewidth,       this.capstyle,
+				   this.dashtype,        this.dashlength,      this.dashspace,
+				   this.filltype,        this.fillwidth,       this.angle1,
+				   this.pitch1,          this.angle2,          this.pitch2);
 	    break;
 	default:
 	    throw new Error(this.type.name());

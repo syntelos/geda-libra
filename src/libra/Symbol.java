@@ -19,21 +19,6 @@ import java.util.StringTokenizer;
 public class Symbol
     extends Attribute
 {
-    public final static String Vdate = "20100214", Vnumber = "2";
-
-    public final static int Debug ;
-    static {
-	int debug = 0;
-	try {
-	    String config = System.getProperty("Debug");
-	    if (null != config){
-		debug = Integer.parseInt(config);
-	    }
-	}
-	catch (Exception exc){
-	}
-	Debug = debug;
-    }
 
     public enum Row {
 	Part, Package, Layout, Description, Documentation, Author, License, Footprint, Path,
