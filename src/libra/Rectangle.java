@@ -171,15 +171,57 @@ public class Rectangle {
     public boolean isNotEmpty(){
 	return (0 != this.width && 0 != this.height);
     }
-    public Rectangle wh(){
-	this.width = (this.x2 - this.x1);
-	this.height = (this.y2 - this.y1);
+    public Rectangle copy(Rectangle that){
+	this.x1 = that.x1;
+	this.y1 = that.y1;
+	this.x2 = that.x2;
+	this.y2 = that.y2;
+	this.width = that.width;
+	this.height = that.height;
 	return this;
     }
-    public Rectangle xy(){
-	this.x2 = (this.x1 + this.width);
-	this.y2 = (this.y1 + this.height);
+    public Rectangle wh(boolean init){
+	if (init){
+	    if (0 != this.x2 || 0 != this.y2){
+		this.width = (this.x2 - this.x1);
+		this.height = (this.y2 - this.y1);
+	    }
+	}
+	else {
+	    /*
+	     * update
+	     */
+	    this.width = (this.x2 - this.x1);
+	    this.height = (this.y2 - this.y1);
+	}
 	return this;
+    }
+    public Rectangle xy(boolean init){
+	if (init){
+	    if (0 != this.width || 0 != this.height){
+		this.x2 = (this.x1 + this.width);
+		this.y2 = (this.y1 + this.height);
+	    }
+	}
+	else {
+	    /*
+	     * update
+	     */
+	    this.x2 = (this.x1 + this.width);
+	    this.y2 = (this.y1 + this.height);
+	}
+	return this;
+    }
+    public Rectangle rect(boolean init){
+	/*
+	 * (init type op)
+	 */
+	if (0 == this.width && 0 == this.height)
+	    return this.wh(init);
+	else if (0 == this.x2 && 0 == this.y2)
+	    return this.xy(init);
+	else
+	    return this;
     }
     public Rectangle xy(int x1, int y1){
 	this.x1 = x1;
@@ -199,24 +241,24 @@ public class Rectangle {
     }
     public Rectangle dx1(int dx1){
 	this.x1 += dx1;
-	return this.wh();
+	return this.wh(false);
     }
     public Rectangle dy1(int dy1){
 	this.y1 += dy1;
-	return this.wh();
+	return this.wh(false);
     }
     public Rectangle dx2(int dx2){
 	this.x2 += dx2;
-	return this.wh();
+	return this.wh(false);
     }
     public Rectangle dy2(int dy2){
 	this.y2 += dy2;
-	return this.wh();
+	return this.wh(false);
     }
     public Rectangle dxy1(int dx1, int dy1){
 	this.x1 += dx1;
 	this.y1 += dy1;
-	return this.wh();
+	return this.wh(false);
     }
     public Rectangle normalize(){
 

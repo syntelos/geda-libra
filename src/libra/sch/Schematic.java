@@ -2,6 +2,12 @@ package libra.sch;
 
 import libra.Attribute;
 import libra.CSV;
+import libra.GAF;
+import libra.GedaHome;
+import libra.Layout;
+import libra.Rectangle;
+import libra.Symbol;
+import libra.io.FileType;
 
 import java.io.File ;
 import java.io.FileOutputStream ;
@@ -14,6 +20,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+/**
+ * Schematic tool
+ */
 public class Schematic
     extends Attribute
 {
@@ -44,7 +53,9 @@ public class Schematic
     }
 
 
-    public String title, author, size, logo;
+    public String title, author, logo;
+
+    public char size;
 
     public Component[] components;
 
@@ -56,11 +67,29 @@ public class Schematic
 	throws IOException
     {
 	this();
-	CSV csv = new CSV(file);
-	boolean once = true;
-	for (String[] line: csv.content){
-	    once = this.add(line,once);
+	final FileType ft = FileType.For(file);
+	switch(ft){
+	case CSV:
+	    CSV csv = new CSV(file);
+	    boolean once = true;
+	    for (String[] line: csv.content){
+		once = this.add(line,once);
+	    }
+	    break;
+	case SYM:
+	    GAF gaf = new GAF(file);
+	    this.copy(gaf.first());
+	    this.copy(gaf.tail());
+	    break;
+	default:
+	    throw new IllegalStateException(String.format("Unsupported file type '%s' (%s)",file.getPath(),ft.name()));
 	}
+    }
+    /**
+     * Generic attribute
+     */
+    public Schematic(String line){
+	super(line);
     }
 
 
@@ -98,7 +127,7 @@ public class Schematic
 		return out;
 	    }
 	    else
-		throw new IllegalStateException("Missing layout.");
+		throw new IllegalStateException("Missing markup.");
 	}
 	else
 	    throw new IllegalStateException("Missing layout.");
@@ -123,8 +152,7 @@ public class Schematic
 		this.author = value;
 	    return true;
 	case Size:
-	    if (null == this.size)
-		this.size = value;
+	    this.setSize(value);
 	    return true;
 	case Logo:
 	    if (null == this.logo)
@@ -149,13 +177,151 @@ public class Schematic
 
 	this.components = Component.Add(this.components,c);
     }
+    public int size(){
+	if (null != this.components)
+	    return this.components.length;
+	else
+	    return 0;
+    }
+    public Component get(int idx){
+	if (-1 < idx && idx < this.size())
+	    return this.components[idx];
+	else
+	    return null;
+    }
+    public char getSize(){
+	return this.size;
+    }
+    public Schematic setSize(String size){
+	return this.setSize(size.trim().toUpperCase().charAt(0));
+    }
+    public Schematic setSize(char size){
+	this.size = size;
+	this.componentName = "title-bordered-"+size+".sym";
+	return this;
+    }
     public boolean layout(){
-	return true;
+	/*
+	 * In order to permit "Size" to be optional, we'll first do a
+	 * layout and then re-layout into a titleblock.
+	 */
+	final int count = this.size();
+	if (0 < count){
+	    Rectangle[] components = new Rectangle[count];
+	    {
+		for (int cc = 0; cc < count; cc++){
+		    components[cc] = this.get(cc).getBounds();
+		}
+	    }
+	    /*
+	     * Collect membership statistics
+	     */
+	    int width_min = Integer.MAX_VALUE, width_max = Integer.MIN_VALUE;
+	    int height_min = Integer.MAX_VALUE, height_max = Integer.MIN_VALUE;
+	    boolean[] small = new boolean[count];
+	    {
+		for (int cc = 0; cc < count; cc++){
+		    Rectangle component = components[cc];
+		    int w = (800 + component.width);
+		    int h = (800 + component.height);
+		    width_min = Math.min(width_min,w);
+		    width_max = Math.max(width_max,w);
+		    height_min = Math.min(height_min,h);
+		    height_max = Math.max(height_max,h);
+		}
+		final float t = 0.5f;
+		final float width_t = (t * width_max);
+		final float height_t = (t * height_max);
+		for (int cc = 0; cc < count; cc++){
+		    Rectangle component = components[cc];
+		    float w = (800 + component.width);
+		    float h = (800 + component.height);
+
+		    if (w <= width_t && h <= height_t)
+
+			small[cc] = true;
+		    else
+			small[cc] = false;
+		}
+	    }
+	    Layout.Cursor cursor = new Layout.Cursor(width_min, width_max, height_min, height_max);
+	    /*
+	     * Primary layout is a horizontal L2R, while small (<= 50%)
+	     * components are stacked vertically T2B.
+	     */
+	    {
+		Component prev = null, next;
+		/*
+		 * First pass, basic positioning
+		 */
+		for (int cc = 0; cc < count; cc++){
+
+		    next = this.get(cc);
+
+		    cursor.small(small[cc]);
+
+		    next.layout(prev,cursor);
+		    prev = next;
+		}
+		/*
+		 * Second pass, finish positioning
+		 */
+		cursor.reset();
+		prev = null;
+		for (int cc = 0; cc < count; cc++){
+
+		    next = this.get(cc);
+
+		    cursor.small(small[cc]);
+
+		    next.layout(prev,cursor);
+		    prev = next;
+		}
+	    }
+	    /*
+	     * Size fitting & determination
+	     */
+	    Rectangle layout = this.getBounds(Attribute.Type.C);
+
+	    Symbol titleblock = this.getComponentTitleblock();
+	    if (null == titleblock){
+
+	    }
+	    else {
+
+	    }
+	    return true;
+	}
+	else
+	    return false;
     }
     public boolean markup(){
 	return true;
     }
     public java.lang.Iterable<Component> components(){
 	return new Component.Iterable(this.components);
+    }
+    public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
+	if (Attribute.Type.C == type && null != this.components)
+	    return new Attribute.Iterable(this.components);
+	else
+	    return super.iterator(type);
+    }
+    public Rectangle getBounds(Attribute.Type type){
+	if (Attribute.Type.C == type && null != this.components){
+	    Attribute[] list = this.components;
+
+	    Rectangle bounds = list[0].normalize();
+	    final int count = list.length;
+	    for (int cc = 1; cc < count; cc++){
+		Attribute child = list[cc];
+		if (child.isNotEmpty())
+		    bounds = bounds.union(child);
+	    }
+	    return bounds;
+	}
+	else
+	    return super.getBounds(type);
+
     }
 }

@@ -14,7 +14,7 @@ public class Main {
     public static void Usage(){
 	System.out.println("Usage");
 	System.out.println();
-	System.out.println("    Sym -i symbol.csv [options]");
+	System.out.println("    sym -i symbol.csv [options]");
 	System.out.println();
 	System.out.println("Description");
 	System.out.println();

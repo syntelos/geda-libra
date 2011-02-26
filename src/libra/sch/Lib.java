@@ -9,7 +9,9 @@ import java.io.File;
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
-public class Lib {
+public class Lib
+    extends libra.io.FileIO
+{
 
     private static File Directory = new File("lib");
 
@@ -33,7 +35,7 @@ public class Lib {
     private final static java.util.Map<String,Symbol> Map = new java.util.HashMap<String,Symbol>();
 
     public final static Symbol For(String name){
-	name = Clean(name);
+	name = Basename(name);
 
 	Symbol sym = Map.get(name);
 	if (null == sym){
@@ -56,47 +58,5 @@ public class Lib {
 	    }
 	}
 	return sym;
-    }
-    /**
-     * String basename
-     */
-    public final static String Clean(String name){
-	int[] indeces = CleanScan(name);
-	if (null != indeces)
-	    return name.substring(indeces[0],indeces[1]);
-	else
-	    return name;
-    }
-    private final static int[] CleanScan(String name){
-	/*
-	 * single pass basename scan
-	 */
-	final char[] cary = name.toCharArray();
-	final int count = cary.length;
-	final int fext = (count-4); // .sym
-	int[] indeces = null;
-	scan:
-	for (int cc = 0; cc < count; cc++){
-	    switch(cary[cc]){
-	    case '/':
-	    case '\\':
-		indeces = new int[]{cc+1,count};
-		indeces[0] = cc+1;
-		break;
-	    case '.':
-		if (cc >= fext){
-		    if (null == indeces)
-			indeces = new int[]{0,cc};
-		    else
-			indeces[1] = cc;
-		    break scan;
-		}
-		else
-		    break;
-	    default:
-		break;
-	    }
-	}
-	return indeces;
     }
 }

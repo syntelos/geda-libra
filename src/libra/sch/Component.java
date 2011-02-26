@@ -1,10 +1,13 @@
 package libra.sch;
 
 import libra.Attribute;
+import libra.Layout;
 import libra.Pin;
 import libra.Symbol;
 
-
+/**
+ * Schematic component
+ */
 public class Component
     extends Attribute
 {
@@ -15,7 +18,16 @@ public class Component
 
     private Net[] nets;
 
+    /*
+     * First and second layout passes are known by this field being
+     * null on the first pass and not null on the second.
+     */
+    public Layout.Cursor.Relation layoutRelation;
 
+
+    /**
+     * Schematic component
+     */
     public Component(String[] line){
 	super(Attribute.Type.P);
 	if (2 < line.length){
@@ -39,6 +51,10 @@ public class Component
     public void add(Net n){
 
 	this.nets = Net.Add(this.nets,n);
+    }
+    public void layout(Component prev, Layout.Cursor cursor){
+
+	this.layoutRelation = cursor.layout(prev,this);
     }
     public java.lang.Iterable<Net> nets(){
 	return new Net.Iterable(this.nets);

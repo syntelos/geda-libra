@@ -3,7 +3,7 @@ package libra;
 import java.util.StringTokenizer;
 
 /**
- * 
+ * Pin layout tool.
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
@@ -19,6 +19,134 @@ public class Layout {
 		return LBRT;
 	}
     }
+    /**
+     * Schematic layout cursor
+     */
+    public static class Cursor {
+	/**
+	 * Schematic layout cursor direction
+	 */
+	public enum  Direction {
+	    Horizontal, Vertical;
+	}
+	public enum Relation {
+	    Left, Right, Over, Under;
+
+
+	    public boolean isHorizontal(){
+		return (Left == this || Right == this);
+	    }
+	    public boolean isVertical(){
+		return (Over == this || Under == this);
+	    }
+	}
+
+	public final static int X0 = 2000, Y0 = 2000, D0 = 800;
+
+
+	public int x, y, dx, dy;
+
+	public Direction dir;
+
+	public final int width_min, width_max, height_min, height_max;
+
+
+	public Cursor(int width_min, int width_max, int height_min, int height_max){
+	    super();
+	    this.width_min = width_min;
+	    this.width_max = width_max;
+	    this.height_min = height_min;
+	    this.height_max = height_max;
+	    this.reset();
+	}
+
+
+	public Cursor small(boolean is){
+	    if (is)
+		this.dir = Direction.Vertical;
+	    else
+		this.dir = Direction.Horizontal;
+	    return this;
+	}
+	public Cursor reset(){
+	    this.x = X0;
+	    this.y = Y0;
+	    this.dx = D0;
+	    this.dy = D0;
+	    this.dir = Direction.Horizontal;
+	    return this;
+	}
+	public Layout.Cursor.Relation layout(libra.sch.Component prev, libra.sch.Component next){
+	    if (null == next.layoutRelation){
+		/*
+		 * First pass, basic positioning
+		 */
+		switch(this.dir){
+		case Horizontal:
+		    if (null == prev){
+			this.y = Y0;
+			next.xy(this.x,this.y);
+			this.x += (this.dx + next.width);
+			return Layout.Cursor.Relation.Left;
+		    }
+		    else {
+			this.y = Y0;
+			next.xy(this.x,this.y);
+			this.x += (this.dx + next.width);
+			return Layout.Cursor.Relation.Right;
+		    }
+		case Vertical:
+		    if (null == prev || prev.layoutRelation.isHorizontal()){
+			this.y = (Y0 + this.height_max) - (next.height);
+			next.xy(this.x,this.y);
+			this.y -= this.dy;
+			if (Y0 > this.y){
+			    this.x += (this.dx + next.width);
+			    this.y = (Y0 + this.height_max);
+			}
+			return Layout.Cursor.Relation.Over;
+		    }
+		    else {
+			this.y -= next.height;
+			if (Y0 > this.y){
+			    this.x += (this.dx + next.width);
+			    this.y = (Y0 + this.height_max) - (next.height);
+			}
+			next.xy(this.x,this.y);
+			this.y -= this.dy;
+			if (Y0 > this.y){
+			    this.x += (this.dx + next.width);
+			    this.y = (Y0 + this.height_max);
+			}
+			return Layout.Cursor.Relation.Under;
+		    }
+		default:
+		    throw new Error(this.dir.name());
+		}
+	    }
+	    else {
+		/*
+		 * Second pass, finish positioning
+		 */
+		switch(next.layoutRelation){
+		case Left:
+
+		    return next.layoutRelation;
+		case Right:
+
+		    return next.layoutRelation;
+		case Over:
+
+		    return next.layoutRelation;
+		case Under:
+
+		    return next.layoutRelation;
+		default:
+		    throw new Error(next.layoutRelation.name());
+		}
+	    }
+	}
+    }
     public enum Position {
 	T(1), L(2), B(4), R(8);
 
@@ -30,6 +158,12 @@ public class Layout {
 	}
 
 
+	public boolean isHorizontal(){
+	    return (L == this || R == this);
+	}
+	public boolean isVertical(){
+	    return (T == this || B == this);
+	}
 	public boolean get(int state){
 	    return (this.bit == (state & this.bit));
 	}

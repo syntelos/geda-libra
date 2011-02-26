@@ -19,10 +19,12 @@ Schematic Table
     The CSV file starts with a Meta Data segment, followed by a Table
     Headline and then Table Data.
 
+    Comment rows begin with '#'.
+
     Meta Data
 
         The following Meta Data fields may be inserted before the
-        Table Headline.  Only the "Size" field is required.
+        Table Headline.  
 
             Title
             Author
@@ -47,21 +49,24 @@ Schematic Table
 
             Component,Pin,Signal
 
-        A Table Headline is required.  It is recognized as not Meta
-        Data and before Table Data.
+        A Table Headline is not required.  One headline is permitted
+        (and recommended), and is recognized as not Meta Data and
+        before Table Data.
 
-        Additional columns are ignored by this tool.
+        Additional columns are permitted.  They will be ignored by the
+        tool.  
 
     Table Data
 
         The value of the Component column is a name.  This name is the
-        symbol file name without the trailing dot "sym" filename
+        symbol file name without the trailing "dot sym" filename
         extension.
 
         The value of the Pin column is a Pin Number from within the
         component (symbol).
 
         The value of the Signal column value is the NET Signal Name.
+        The string follows the net naming conventions from gEDA.
 
 
 Invocation
@@ -72,7 +77,7 @@ Installation
 
      Installed title blocks are found in
 
-        {GEDA_HOME}/sym/titleblock/title-bordered-D.sym
+        {GEDA_HOME}/sym/titleblock
 
      where GEDA_HOME is one of
 
@@ -81,4 +86,5 @@ Installation
      or
         /usr/local/share/gEDA 
 
-     or identified by an environment variable named GEDA_HOME.
+     or identified by an environment variable named GEDA_HOME, or
+     passed on the command line.

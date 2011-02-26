@@ -1,7 +1,8 @@
 package libra.sch;
 
-import libra.Symbol;
+import libra.GedaHome;
 import libra.Pin;
+import libra.Symbol;
 
 import java.io.File ;
 import java.io.FileOutputStream ;
@@ -18,7 +19,7 @@ public class Main {
     public static void Usage(){
 	System.out.println("Usage");
 	System.out.println();
-	System.out.println("    Sch -p symbol+ [-t schematic.csv]");
+	System.out.println("    sch -p symbol+ [-t schematic.csv]");
 	System.out.println();
 	System.out.println("Description");
 	System.out.println();
@@ -34,7 +35,8 @@ public class Main {
 	System.out.println();
 	System.out.println("  For example");
 	System.out.println();
-	System.out.println("        java -jar sch.jar -p ADXL345 HMC5834 -l test/sym/src");
+	System.out.println("        java -jar sch.jar -p ADXL345 HMC5834 -l test/sym/src \\");
+	System.out.println("           -t test/sch/dst/schematic-0.csv");
 	System.out.println();
 	System.out.println("Usage");
 	System.out.println();
@@ -42,7 +44,7 @@ public class Main {
 	System.out.println();
 	System.out.println("Description");
 	System.out.println();
-	System.out.println("    Produce gEDA schematic from schematic description table.");
+	System.out.println("    Generate a gEDA schematic from a schematic description table.");
 	System.out.println();
 	System.out.println("  Input table");
 	System.out.println();
@@ -94,7 +96,7 @@ public class Main {
 	System.out.println("  For example");
 	System.out.println();
 	System.out.println("        java -jar sch.jar -i test/sch/src/schematic-0.csv \\");
-	System.out.println("           -l test/sym/src");
+	System.out.println("           -l test/sym/src -s test/sch/dst/schematic-0.sch");
 	System.out.println();
 	System.out.println("Bugs");
 	System.out.println();
@@ -172,11 +174,11 @@ public class Main {
 	    case P:
 		cc += 1;
 		if (cc < argc){
-		    arg = Lib.Clean(argv[cc]);
+		    arg = Lib.Basename(argv[cc]);
 		    if (0 < arg.length() && '-' != arg.charAt(0)){
 			symbolNames = new String[]{arg};
 			for (int tt = (cc+1); tt < argc; tt++){
-			    arg = Lib.Clean(argv[tt]);
+			    arg = Lib.Basename(argv[tt]);
 			    if (0 < arg.length()){
 				if ('-' == arg.charAt(0))
 				    break;

@@ -1,5 +1,7 @@
 package libra;
 
+import libra.io.FileType;
+
 import java.io.File ;
 import java.io.FileOutputStream ;
 import java.io.IOException ;
@@ -12,7 +14,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
- * A component.
+ * Symbol tool.
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
@@ -53,11 +55,11 @@ public class Symbol
     public String part, pack, footprint, version, 
 	author, description, documentation, license, path;
 
-    private Iterable<Attribute> left, bottom, right, top;
+    private java.lang.Iterable<Attribute> left, bottom, right, top;
 
     private Rectangle[] intersects;
 
-    private Iterable<Rectangle> intersectsI;
+    private java.lang.Iterable<Rectangle> intersectsI;
 
 
     public Symbol(){
@@ -68,11 +70,29 @@ public class Symbol
 	throws IOException
     {
 	this();
-	CSV csv = new CSV(file);
-	boolean once = true;
-	for (String[] line: csv.content){
-	    once = this.add(line,once);
+	final FileType ft = FileType.For(file);
+	switch(ft){
+	case CSV:
+	    CSV csv = new CSV(file);
+	    boolean once = true;
+	    for (String[] line: csv.content){
+		once = this.add(line,once);
+	    }
+	    break;
+	case SYM:
+	    GAF gaf = new GAF(file);
+	    this.copy(gaf.first());
+	    this.copy(gaf.tail());
+	    break;
+	default:
+	    throw new IllegalStateException(String.format("Unsupported file type '%s' (%s)",file.getPath(),ft.name()));
 	}
+    }
+    /**
+     * Generic attribute
+     */
+    public Symbol(String line){
+	super(line);
     }
 
 
@@ -442,9 +462,30 @@ public class Symbol
 	else
 	    return false;
     }
-
     public java.lang.Iterable<Pin> pins(){
 	return new Pin.Iterable(this.pins);
+    }
+    public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
+	if (Attribute.Type.P == type && null != this.pins)
+	    return new Attribute.Iterable(this.pins);
+	else
+	    return super.iterator(type);
+    }
+    public Rectangle getBounds(Attribute.Type type){
+	if (Attribute.Type.P == type && null != this.pins){
+	    Attribute[] list = this.pins;
+
+	    Rectangle bounds = list[0].normalize();
+	    final int count = list.length;
+	    for (int cc = 1; cc < count; cc++){
+		Attribute child = list[cc];
+		if (child.isNotEmpty())
+		    bounds = bounds.union(child);
+	    }
+	    return bounds;
+	}
+	else
+	    return super.getBounds(type);
     }
     public String toString(){
 	if (0 < Debug){
@@ -498,27 +539,27 @@ public class Symbol
 	    return super.toString();
 	}
     }
-    public Iterable<Attribute> left(){
+    public java.lang.Iterable<Attribute> left(){
 	if (null == this.left)
 	    this.left = new Label.Iterable(this.pins,Layout.Position.L);
 	return this.left;
     }
-    public Iterable<Attribute> bottom(){
+    public java.lang.Iterable<Attribute> bottom(){
 	if (null == this.bottom)
 	    this.bottom = new Label.Iterable(this.pins,Layout.Position.B);
 	return this.bottom;
     }
-    public Iterable<Attribute> right(){
+    public java.lang.Iterable<Attribute> right(){
 	if (null == this.right)
 	    this.right = new Label.Iterable(this.pins,Layout.Position.R);
 	return this.right;
     }
-    public Iterable<Attribute> top(){
+    public java.lang.Iterable<Attribute> top(){
 	if (null == this.top)
 	    this.top = new Label.Iterable(this.pins,Layout.Position.T);
 	return this.top;
     }
-    public Iterable<Rectangle> intersects(){
+    public java.lang.Iterable<Rectangle> intersects(){
 	if (null == this.intersectsI)
 	    this.intersectsI = new Rectangle.R.Iterable(this.intersects);
 	return this.intersectsI;
