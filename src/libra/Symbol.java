@@ -76,6 +76,19 @@ public class Symbol
     }
 
 
+    public Rectangle getBounds(){
+	Rectangle bounds = this.bounds;
+	if (null == bounds){
+	    bounds = super.getBounds();
+	    if (null != this.pins){
+		for (Pin pin: this.pins){
+		    bounds = bounds.union(pin);
+		}
+	    }
+	    this.bounds = bounds;
+	}
+	return bounds;
+    }
     public void write(File sym)
 	throws IOException
     {
@@ -434,13 +447,17 @@ public class Symbol
 	return new Pin.Iterable(this.pins);
     }
     public String toString(){
-	if (0 == Debug)
-	    return super.toString();
-	else {
+	if (0 < Debug){
 
 	    StringBuilder string = new StringBuilder();
 
 	    string.append( super.toString());
+
+	    for (Rectangle r: this.intersects()){
+		Attribute b = new Attribute(Attribute.Type.B).box(r);
+
+		string.append(String.format("%n%s",b));
+	    }
 
 	    if (1 < Debug){
 
@@ -464,15 +481,21 @@ public class Symbol
 
 		    string.append(String.format("%n%s",b));
 		}
-	    }
 
-	    for (Rectangle r: this.intersects()){
-		Attribute b = new Attribute(Attribute.Type.B).box(r);
+		if (2 < Debug){
 
-		string.append(String.format("%n%s",b));
+		    Rectangle r = this.getBounds();
+
+		    Attribute b = new Attribute(Attribute.Type.B).box(r);
+
+		    string.append(String.format("%n%s",b));
+		}
 	    }
 
 	    return string.toString();
+	}
+	else {
+	    return super.toString();
 	}
     }
     public Iterable<Attribute> left(){

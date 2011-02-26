@@ -130,6 +130,15 @@ public class Pin
 	}
 	return this.name;
     }
+    public String nameString(char sep){
+	StringBuilder strbuf = new StringBuilder();
+	for (String name: this.namein){
+	    if (0 < strbuf.length())
+		strbuf.append(sep);
+	    strbuf.append(name);
+	}
+	return strbuf.toString();
+    }
     public Pin.Type getType(){
 	if (null == this.type){
 	    if (1 == this.typein.length)

@@ -11,7 +11,7 @@ public class Component
 
     public final String name;
 
-    private Symbol symbol;
+    public final Symbol symbol;
 
     private Net[] nets;
 
@@ -20,6 +20,7 @@ public class Component
 	super(Attribute.Type.P);
 	if (2 < line.length){
 	    this.name = line[0];
+	    this.symbol = Lib.For(this.name);
 	    this.add(line);
 	}
 	else

@@ -10,3 +10,6 @@ driven project.
 
         In development, see sch.txt
 
+    svg
+
+        Manipulate SVG Path "d" data for use in GSCHEM.  See svg.txt

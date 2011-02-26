@@ -1,0 +1,63 @@
+Usage
+
+  svg [-i] -g -a WxH -f file.p
+
+Description
+
+    Display the transformed shape path from 'file.p' into a window area having 
+    pixel dimensions width (W) and height (H).
+
+    Optionally invert (with '-i') the data from Y+ down to Y+ up (horizontal
+    flip).
+
+    The input file contains raw path data, for example:
+
+        M19.200000,334.080000L19.200000,302.080000L364.480000,302.080000
+        L364.480000,334.080000L19.200000,334.080000ZM155.680000,207.840000
+        L155.680000,237.760000L19.200000,237.760000L19.200000,205.600000
+        L114.880000,205.600000C97.440000,187.840000,88.800000,167.840000,
+        88.800000,145.760000C88.800000,118.240000,99.040000,94.720000,
+        119.360000,74.880000C139.680000,55.040000,163.840000,45.120000,
+        192.000000,45.120000C220.000000,45.120000,244.160000,55.040000,
+        264.480000,74.880000C284.960000,94.720000,295.040000,118.240000,
+        295.040000,145.760000C295.040000,167.840000,286.400000,187.840000,
+        268.960000,205.600000L364.480000,205.600000L364.480000,237.760000
+        L228.000000,237.760000L228.000000,207.840000C251.200000,192.800000,
+        262.880000,172.640000,262.880000,147.360000C262.880000,128.160000,
+        255.840000,111.840000,241.920000,98.080000C227.840000,84.160000,
+        211.200000,77.280000,192.000000,77.280000C172.480000,77.280000,
+        155.840000,84.160000,141.920000,98.080000C128.000000,111.840000,
+        120.960000,128.160000,120.960000,147.360000C120.960000,172.640000,
+        132.480000,192.800000,155.680000,207.840000Z
+
+Usage
+
+  svg [-g] -a AWxAH -v VWxVH -f file.p
+
+Description
+
+    Apply area to view box scale transform on the shape from 'file.p'.
+
+    Optionally display (with '-g') the data set visually.
+
+Usage
+
+  svg [-g -a AWxAH] -t sx,hx,hy,sy,tx,ty -f file.p
+
+Description
+
+    Apply transform matrix (with '-t') to the shape from 'file.p'.
+
+    Optionally display (with '-g') the data set into a window area (-a)
+    having pixel dimensions width (AW) and height (AH).
+
+Usage
+
+  svg [-g] -a AWxAH -v VWxVH -t sx,hx,hy,sy,tx,ty -f file.p
+
+Description
+
+    Apply view and matrix transforms to the shape from 'file.p'.
+
+    Optionally display (with '-g') the data set visually.
+

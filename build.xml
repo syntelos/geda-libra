@@ -8,7 +8,7 @@
 
   <property name="sym.target.jar" value="sym.jar"/>
   <property name="sch.target.jar" value="sch.jar"/>
-
+  <property name="svg.target.jar" value="svg.jar"/>
 
   <target name="all">
 
@@ -21,6 +21,7 @@
 
     <antcall target="sym"/>
     <antcall target="sch"/>
+    <antcall target="svg"/>
 
     <delete>
       <fileset dir="${bin}">
@@ -49,6 +50,11 @@
   <target name="sch" depends="compile">
 
     <jar jarfile="${sch.target.jar}" basedir="${bin}" manifest="${src}/libra/sch/Manifest.mf" />
+  </target>
+
+  <target name="svg" depends="compile">
+
+    <jar jarfile="${svg.target.jar}" basedir="${bin}" manifest="${src}/libra/svg/Manifest.mf" />
   </target>
 
   <target name="clean" description="Drop bin directory">

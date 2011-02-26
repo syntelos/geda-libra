@@ -65,6 +65,8 @@ public class Attribute
 
     public Attribute[] children;
 
+    protected Rectangle bounds;
+
 
     public Attribute(Type t){
 	super();
@@ -75,6 +77,20 @@ public class Attribute
     }
 
 
+    public Rectangle getBounds(){
+	Rectangle bounds = this.bounds;
+	if (null == bounds){
+	    bounds = this.normalize();
+	    if (null != this.children){
+		for (Attribute child: this.children){
+		    if (child.isNotEmpty())
+			bounds = bounds.union(child);
+		}
+	    }
+	    this.bounds = bounds;
+	}
+	return bounds;
+    }
     public boolean isPinSeq(){
 	if (Attribute.Type.T == this.type)
 	    return (null != this.name && "pinseq".equals(this.name));

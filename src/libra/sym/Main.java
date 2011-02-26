@@ -89,6 +89,11 @@ public class Main {
 	System.out.println();
 	System.out.println("Bugs");
 	System.out.println();
+	System.out.println("  Path");
+	System.out.println();
+	System.out.println("    Handled as a logo graphic, but not yet as a part outline");
+	System.out.println("    with pin layout on a path.");
+	System.out.println();
 	System.out.println("  License");
 	System.out.println();
 	System.out.println("    Incomplete handling of license needs additional use and");
