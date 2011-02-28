@@ -17,7 +17,9 @@ import java.util.StringTokenizer;
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
-public class Rectangle {
+public class Rectangle
+    extends Object
+{
     /**
      * Rectangle plotter for test/debug inverts coordinates into
      * gEDA/GSCHEM space.
@@ -329,6 +331,37 @@ public class Rectangle {
     public String toString(){
 	return this.rectString();
     }
+    public int compareTo(Rectangle that){
+	if (this == that)
+	    return 0;
+	else if (this.width < that.width)
+	    return -1;
+	else if (this.width == that.width){
+
+	    if (this.height < that.height)
+		return -1;
+	    else if (this.height == that.height){
+
+		if (this.x1 < that.x1)
+		    return -1;
+		else if (this.x1 == that.x1){
+
+		    if (this.y1 < that.y1)
+			return -1;
+		    else if (this.y1 == that.y1)
+			return 0;
+		    else 
+			return 1;
+		}
+		else 
+		    return 1;
+	    }
+	    else
+		return 1;
+	}
+	else
+	    return 1;
+    }
 
 
     public enum Op {
@@ -608,7 +641,6 @@ public class Rectangle {
 	    return -1;
 	}
     }
-
     public final static Rectangle[] Add(Rectangle[] list, Rectangle item){
 	if (null == item)
 	    return list;
@@ -620,6 +652,74 @@ public class Rectangle {
 	    System.arraycopy(list,0,copier,0,len);
 	    copier[len] = item;
 	    return copier;
+	}
+    }
+
+    public final static void SortAscending(Rectangle[] list){
+
+	java.util.Arrays.sort(list,Comparator.ASC);
+    }
+    public final static void SortDescending(Rectangle[] list){
+
+	java.util.Arrays.sort(list,Comparator.DSC);
+    }
+    /**
+     * 
+     */
+    public final static class Comparator
+	extends Object
+	implements java.util.Comparator<Rectangle>
+    {
+	public enum Order {
+	    Ascending, Descending;
+	}
+
+	public final static Comparator ASC = new Comparator(Order.Ascending);
+	public final static Comparator DSC = new Comparator(Order.Descending);
+
+	public final static Comparator For(Order ord){
+	    switch(ord){
+	    case Ascending:
+		return Comparator.ASC;
+	    case Descending:
+		return Comparator.DSC;
+	    default:
+		throw new Error(ord.name());
+	    }
+	}
+
+
+	public final Order order;
+
+
+	public Comparator(Order order){
+	    super();
+	    if (null != order)
+		this.order = order;
+	    else
+		throw new IllegalArgumentException();
+	}
+
+
+	public int compare(Rectangle a, Rectangle b){
+	    switch (this.order){
+	    case Ascending:
+		return a.compareTo(b);
+	    case Descending:
+		switch(a.compareTo(b)){
+		case 0:
+		    return 0;
+		case 1:
+		    return -1;
+		default:
+		    return 1;
+		}
+	    default:
+		throw new Error(this.order.name());
+	    }
+	}
+	public boolean equals(Rectangle a, Rectangle b){
+	    return a.equals(b);
 	}
     }
     /**

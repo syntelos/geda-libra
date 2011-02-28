@@ -4,7 +4,7 @@ B 300 300 1225 2500 3 0 0 0 -1 -1 0 -1 -1 -1 -1 -1
 T 600 400 9 10 0 0 0 0 1
 refdes=U?
 T 537 1500 9 10 1 1 0 0 1
-device=DS1007
+DS1007
 T 537 1500 9 10 0 0 0 0 1
 description=Programmable oscillator
 T 537 1500 9 10 0 0 0 0 1
@@ -27,9 +27,9 @@ pinseq=0
 T 0 2150 9 10 0 0 0 0 1
 pintype=out
 T 205 2195 9 10 1 1 0 6 1
-pinnumber=1
+1
 T 355 2145 9 10 1 1 0 0 1
-pinlabel=OUT1
+OUT1
 }
 P 0 1750 300 1750 1 0 0
 {
@@ -38,9 +38,9 @@ pinseq=1
 T 0 1750 9 10 0 0 0 0 1
 pintype=out
 T 205 1795 9 10 1 1 0 6 1
-pinnumber=2
+2
 T 355 1745 9 10 1 1 0 0 1
-pinlabel=OUT2
+OUT2
 }
 P 0 1350 300 1350 1 0 0
 {
@@ -49,9 +49,9 @@ pinseq=2
 T 0 1350 9 10 0 0 0 0 1
 pintype=pwr
 T 205 1395 9 10 1 1 0 6 1
-pinnumber=3
+3
 T 355 1345 9 10 1 1 0 0 1
-pinlabel=VCC
+VCC
 }
 P 0 950 300 950 1 0 0
 {
@@ -60,9 +60,9 @@ pinseq=3
 T 0 950 9 10 0 0 0 0 1
 pintype=pwr
 T 205 995 9 10 1 1 0 6 1
-pinnumber=4
+4
 T 355 945 9 10 1 1 0 0 1
-pinlabel=GND
+GND
 }
 P 1825 950 1525 950 1 0 0
 {
@@ -71,9 +71,9 @@ pinseq=4
 T 1825 950 9 10 0 0 0 0 1
 pintype=in
 T 1620 995 9 10 1 1 0 0 1
-pinnumber=5
+5
 T 1470 945 9 10 1 1 0 6 1
-pinlabel=CTRL0
+CTRL0
 }
 P 1825 1350 1525 1350 1 0 0
 {
@@ -82,9 +82,9 @@ pinseq=5
 T 1825 1350 9 10 0 0 0 0 1
 pintype=in
 T 1620 1395 9 10 1 1 0 0 1
-pinnumber=6
+6
 T 1470 1345 9 10 1 1 0 6 1
-pinlabel=CTRL1
+CTRL1
 }
 P 1825 1750 1525 1750 1 0 0
 {
@@ -93,9 +93,9 @@ pinseq=6
 T 1825 1750 9 10 0 0 0 0 1
 pintype=io
 T 1620 1795 9 10 1 1 0 0 1
-pinnumber=7
+7
 T 1470 1745 9 10 1 1 0 6 1
-pinlabel=SDA
+SDA
 }
 P 1825 2150 1525 2150 1 0 0
 {
@@ -104,7 +104,7 @@ pinseq=7
 T 1825 2150 9 10 0 0 0 0 1
 pintype=clk
 T 1620 2195 9 10 1 1 0 0 1
-pinnumber=8
+8
 T 1470 2145 9 10 1 1 0 6 1
-pinlabel=SCL
+SCL
 }

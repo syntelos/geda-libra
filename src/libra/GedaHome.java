@@ -98,21 +98,84 @@ public class GedaHome
     private final static Symbol Init(String name, File file){
 	try {
 	    Symbol sym = new Symbol(file);
-	    if (sym.layout()){
-		if (sym.markup())
-		    Map.put(name,sym);
-		else
-		    throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
-	    }
-	    else if (sym.markup())
-		Map.put(name,sym);
-	    else
-		throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
+
+	    if (null == sym.part)
+		sym.part = name;
+
+	    Map.put(name,sym);
 
 	    return sym;
 	}
 	catch (java.io.IOException iox){
 	    throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+	}
+    }
+
+    public static class TitleblocksFilenameFilter
+	extends Object
+	implements java.io.FilenameFilter
+    {
+	public final static TitleblocksFilenameFilter Instance = new TitleblocksFilenameFilter();
+
+	public boolean accept(File file, String name){
+	    return (name.startsWith("title-bordered-"));
+	}
+    }
+
+    private static Symbol[] Titleblocks = null;
+
+    public final static Symbol[] Titleblocks(){
+
+	if (null == Titleblocks){
+
+	    Symbol[] list = null;
+
+	    for (File file: Titleblock.listFiles(TitleblocksFilenameFilter.Instance)){
+		String name = Basename(file.getName());
+		Symbol titleblock = GedaHome.Titleblock(name);
+
+		list = Symbol.Add(list,titleblock);
+	    }
+	    if (null == list)
+		Titleblocks = new Symbol[0];
+	    else {
+		Rectangle.SortAscending(list);
+		Titleblocks = list;
+	    }
+	}
+	{
+	    final int count = Titleblocks.length;
+	    Symbol[] copy = new Symbol[count];
+	    System.arraycopy(Titleblocks,0,copy,0,count);
+	    return copy;
+	}
+    }
+    public final static Symbol Titleblock(Rectangle req){
+
+	Symbol[] list = null;
+
+	for (Symbol titleblock: Titleblocks()){
+
+	    Rectangle space = titleblock.getInnerBoundsTitleblock();
+
+	    if (space.width >= req.width && space.height >= req.height){
+
+		if (req.width+Layout.Cursor.X0 <= space.width &&
+		    req.height+Layout.Cursor.Y0 <= space.height)
+		{
+		    return titleblock;
+		}
+		else
+		    list = Symbol.Add(list,titleblock);
+	    }
+	}
+
+	final int count = ((null == list)?(0):(list.length));
+	switch (count){
+	case 0:
+	    return null;
+	default:
+	    return list[count-1];
 	}
     }
 }

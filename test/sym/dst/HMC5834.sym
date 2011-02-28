@@ -4,7 +4,7 @@ B 300 300 2900 2900 3 0 0 0 -1 -1 0 -1 -1 -1 -1 -1
 T 600 400 9 10 0 0 0 0 1
 refdes=U?
 T 1313 1700 9 10 1 1 0 0 1
-device=HMC5843
+HMC5843
 T 1313 1700 9 10 0 0 0 0 1
 description=Three axis digital magnetometer
 T 1313 1700 9 10 0 0 0 0 1
@@ -27,9 +27,9 @@ pinseq=0
 T 0 2550 9 10 0 0 0 0 1
 pintype=clk
 T 205 2595 9 10 1 1 0 6 1
-pinnumber=1
+1
 T 355 2545 9 10 1 1 0 0 1
-pinlabel=SCL
+SCL
 }
 P 0 2150 300 2150 1 0 0
 {
@@ -38,9 +38,9 @@ pinseq=1
 T 0 2150 9 10 0 0 0 0 1
 pintype=io
 T 205 2195 9 10 1 1 0 6 1
-pinnumber=2
+2
 T 355 2145 9 10 1 1 0 0 1
-pinlabel=SDAP
+SDAP
 }
 P 0 1750 300 1750 1 0 0
 {
@@ -49,9 +49,9 @@ pinseq=2
 T 0 1750 9 10 0 0 0 0 1
 pintype=clk
 T 205 1795 9 10 1 1 0 6 1
-pinnumber=3
+3
 T 355 1745 9 10 1 1 0 0 1
-pinlabel=SCLP
+SCLP
 }
 P 0 1350 300 1350 1 0 0
 {
@@ -60,9 +60,9 @@ pinseq=3
 T 0 1350 9 10 0 0 0 0 1
 pintype=pas
 T 205 1395 9 10 1 1 0 6 1
-pinnumber=4
+4
 T 355 1345 9 10 1 1 0 0 1
-pinlabel=NC
+NC
 }
 P 0 950 300 950 1 0 0
 {
@@ -71,9 +71,9 @@ pinseq=4
 T 0 950 9 10 0 0 0 0 1
 pintype=pas
 T 205 995 9 10 1 1 0 6 1
-pinnumber=5
+5
 T 355 945 9 10 1 1 0 0 1
-pinlabel=NC
+NC
 }
 P 950 0 950 300 1 0 0
 {
@@ -82,9 +82,9 @@ pinseq=5
 T 950 0 9 10 0 0 0 0 1
 pintype=out
 T 900 205 9 10 1 1 90 6 1
-pinnumber=6
+6
 T 950 355 9 10 1 1 90 0 1
-pinlabel=OFFP
+OFFP
 }
 P 1350 0 1350 300 1 0 0
 {
@@ -93,9 +93,9 @@ pinseq=6
 T 1350 0 9 10 0 0 0 0 1
 pintype=out
 T 1300 205 9 10 1 1 90 6 1
-pinnumber=7
+7
 T 1350 355 9 10 1 1 90 0 1
-pinlabel=OFFN
+OFFN
 }
 P 1750 0 1750 300 1 0 0
 {
@@ -104,9 +104,9 @@ pinseq=7
 T 1750 0 9 10 0 0 0 0 1
 pintype=pas
 T 1700 205 9 10 1 1 90 6 1
-pinnumber=8
+8
 T 1750 355 9 10 1 1 90 0 1
-pinlabel=NC
+NC
 }
 P 2150 0 2150 300 1 0 0
 {
@@ -115,9 +115,9 @@ pinseq=8
 T 2150 0 9 10 0 0 0 0 1
 pintype=in
 T 2100 205 9 10 1 1 90 6 1
-pinnumber=9
+9
 T 2150 355 9 10 1 1 90 0 1
-pinlabel=SETP
+SETP
 }
 P 2550 0 2550 300 1 0 0
 {
@@ -126,9 +126,9 @@ pinseq=9
 T 2550 0 9 10 0 0 0 0 1
 pintype=in
 T 2500 205 9 10 1 1 90 6 1
-pinnumber=10
+10
 T 2550 355 9 10 1 1 90 0 1
-pinlabel=SETN
+SETN
 }
 P 3500 950 3200 950 1 0 0
 {
@@ -137,9 +137,9 @@ pinseq=10
 T 3500 950 9 10 0 0 0 0 1
 pintype=pwr
 T 3295 995 9 10 1 1 0 0 1
-pinnumber=11
+11
 T 3145 945 9 10 1 1 0 6 1
-pinlabel=SVDD
+SVDD
 }
 P 3500 1350 3200 1350 1 0 0
 {
@@ -148,9 +148,9 @@ pinseq=11
 T 3500 1350 9 10 0 0 0 0 1
 pintype=pwr
 T 3295 1395 9 10 1 1 0 0 1
-pinnumber=12
+12
 T 3145 1345 9 10 1 1 0 6 1
-pinlabel=DGND
+DGND
 }
 P 3500 1750 3200 1750 1 0 0
 {
@@ -159,9 +159,9 @@ pinseq=12
 T 3500 1750 9 10 0 0 0 0 1
 pintype=in
 T 3295 1795 9 10 1 1 0 0 1
-pinnumber=13
+13
 T 3145 1745 9 10 1 1 0 6 1
-pinlabel=C1
+C1
 }
 P 3500 2150 3200 2150 1 0 0
 {
@@ -170,9 +170,9 @@ pinseq=13
 T 3500 2150 9 10 0 0 0 0 1
 pintype=out
 T 3295 2195 9 10 1 1 0 0 1
-pinnumber=14
+14
 T 3145 2145 9 10 1 1 0 6 1
-pinlabel=SETC
+SETC
 }
 P 3500 2550 3200 2550 1 0 0
 {
@@ -181,9 +181,9 @@ pinseq=14
 T 3500 2550 9 10 0 0 0 0 1
 pintype=pwr
 T 3295 2595 9 10 1 1 0 0 1
-pinnumber=15
+15
 T 3145 2545 9 10 1 1 0 6 1
-pinlabel=DVDD
+DVDD
 }
 P 2550 3500 2550 3200 1 0 0
 {
@@ -192,9 +192,9 @@ pinseq=15
 T 2550 3500 9 10 0 0 0 0 1
 pintype=io
 T 2500 3295 9 10 1 1 90 0 1
-pinnumber=16
+16
 T 2550 3145 9 10 1 1 90 6 1
-pinlabel=VREN
+VREN
 }
 P 2150 3500 2150 3200 1 0 0
 {
@@ -203,9 +203,9 @@ pinseq=16
 T 2150 3500 9 10 0 0 0 0 1
 pintype=pwr
 T 2100 3295 9 10 1 1 90 0 1
-pinnumber=17
+17
 T 2150 3145 9 10 1 1 90 6 1
-pinlabel=AGND
+AGND
 }
 P 1750 3500 1750 3200 1 0 0
 {
@@ -214,9 +214,9 @@ pinseq=17
 T 1750 3500 9 10 0 0 0 0 1
 pintype=pwr
 T 1700 3295 9 10 1 1 90 0 1
-pinnumber=18
+18
 T 1750 3145 9 10 1 1 90 6 1
-pinlabel=AVDD
+AVDD
 }
 P 1350 3500 1350 3200 1 0 0
 {
@@ -225,9 +225,9 @@ pinseq=18
 T 1350 3500 9 10 0 0 0 0 1
 pintype=io
 T 1300 3295 9 10 1 1 90 0 1
-pinnumber=19
+19
 T 1350 3145 9 10 1 1 90 6 1
-pinlabel=DRDY
+DRDY
 }
 P 950 3500 950 3200 1 0 0
 {
@@ -236,7 +236,7 @@ pinseq=19
 T 950 3500 9 10 0 0 0 0 1
 pintype=io
 T 900 3295 9 10 1 1 90 0 1
-pinnumber=20
+20
 T 950 3145 9 10 1 1 90 6 1
-pinlabel=SDA
+SDA
 }

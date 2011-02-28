@@ -576,10 +576,88 @@ public class Symbol
 	else
 	    throw new IllegalStateException();
     }
+    /**
+     * Get the interior open space from a title block
+     */
+    public Rectangle getInnerBoundsTitleblock(){
+	Rectangle bounds = null;
+	for (Attribute box : this.iterator(Attribute.Type.B)){
+	    if (box.x1 == box.y1){
+		if (null == bounds)
+		    bounds = box.normalize();
+		else {
+		    Rectangle tmp = box.normalize();
+		    if (tmp.x1 > bounds.x1)
+			bounds = tmp;
+		}
+	    }
+	    else if (null != bounds){
+		bounds.y1 +=  box.height;
+		bounds.height -= box.height;
+		bounds.xy(false);
+	    }
+	}
+	return bounds;
+    }
+    /**
+     * Get the title box from a titlebox symbol.
+     */
+    public Rectangle getTitlebox(){
+	Rectangle bounds = null;
+	for (Attribute box : this.iterator(Attribute.Type.B)){
+	    if (box.x1 != box.y1){
+		if (null == bounds)
+		    bounds = box.normalize();
+		else {
+		    Rectangle tmp = box.normalize();
+		    if (tmp.x1 > bounds.x1)
+			bounds = tmp;
+		}
+	    }
+	}
+	return bounds;
+    }
+    public Symbol copy(Symbol that){
+	super.copy(that);
+
+	this.layout = that.layout;
+	this.pins = that.pins;
+	this.part = that.part;
+	this.pack = that.pack;
+	this.footprint = that.footprint;
+	this.version = that.version;
+	this.author = that.author;
+	this.description = that.description;
+	this.documentation = that.documentation;
+	this.license = that.license;
+	this.path = that.path;
+
+	this.left = that.left;
+	this.bottom = that.bottom;
+	this.right = that.right;
+	this.top = that.top;
+	this.intersects = that.intersects;
+	this.intersectsI = that.intersectsI;
+
+	return this;
+    }
 
 
     public final static DateFormat DF = new SimpleDateFormat("yyyyMMdd");
 
+    public final static Symbol[] Add(Symbol[] list, Symbol item){
+	if (null == item)
+	    return list;
+	else if (null == list)
+	    return new Symbol[]{item};
+	else {
+	    int len = list.length;
+	    Symbol[] copier = new Symbol[len+1];
+	    System.arraycopy(list,0,copier,0,len);
+	    copier[len] = item;
+	    return copier;
+	}
+    }
     public final static String Tail(String[] terms){
 	final int count = (terms.length-1);
 	if (0 < count){
@@ -593,5 +671,24 @@ public class Symbol
 	}
 	else
 	    return null;
+    }
+    /**
+     * Component attribute output name for symbol name.
+     */
+    public final static String Name(String name){
+	if (null != name){
+	    int idx = name.lastIndexOf('.');
+	    if (0 < idx){
+		if (name.substring(idx+1).equalsIgnoreCase("sym")){
+		    return name;
+		}
+		else if (idx == name.length()-4){
+		    return name.substring(0,idx)+".sym";
+		}
+	    }
+	    return name+".sym";
+	}
+	else
+	    return "";
     }
 }

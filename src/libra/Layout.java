@@ -30,25 +30,27 @@ public class Layout {
 	    Horizontal, Vertical;
 	}
 	public enum Relation {
-	    Left, Right, Over, Under;
+	    Horizontal, Vertical;
 
 
 	    public boolean isHorizontal(){
-		return (Left == this || Right == this);
+		return (Horizontal == this);
 	    }
 	    public boolean isVertical(){
-		return (Over == this || Under == this);
+		return (Vertical == this);
 	    }
 	}
 
-	public final static int X0 = 2000, Y0 = 2000, D0 = 800;
+	public final static int X0 = 2000, Y0 = 2000, D0 = 2000, D2 = (D0<<1);
 
-
-	public int x, y, dx, dy;
-
-	public Direction dir;
 
 	public final int width_min, width_max, height_min, height_max;
+
+	private int x, y, dx, dy;
+
+	private Direction dir;
+
+	private int countW, countH, countX, countY, columnW;
 
 
 	public Cursor(int width_min, int width_max, int height_min, int height_max){
@@ -57,7 +59,11 @@ public class Layout {
 	    this.width_max = width_max;
 	    this.height_min = height_min;
 	    this.height_max = height_max;
-	    this.reset();
+	    this.x = X0;
+	    this.y = Y0;
+	    this.countW = 1;
+	    this.countH = 1;
+	    this.dir = Direction.Horizontal;
 	}
 
 
@@ -68,83 +74,72 @@ public class Layout {
 		this.dir = Direction.Horizontal;
 	    return this;
 	}
-	public Cursor reset(){
+	public Layout.Cursor.Relation layout(libra.sch.Component prev, libra.sch.Component next){
+
+	    switch(this.dir){
+	    case Horizontal:
+		this.x += this.dx;
+		this.y = Y0;
+		next.xy(this.x,this.y);
+		this.dx = (D0+next.width);
+		this.dy = (D0+next.height);
+		this.countX += 1;
+		this.countW = Math.max(this.countW,this.countX);
+		this.countY = 0;
+		return Layout.Cursor.Relation.Horizontal;
+
+	    case Vertical:
+		this.y += this.dy;
+		if (this.y > this.height_max){
+		    this.y = Y0;
+		    this.x += this.dx;
+		    next.xy(this.x,this.y);
+		    this.dx = (D0+next.width);
+		    this.dy = (D0+next.height);
+		    this.countX += 1;
+		    this.countW = Math.max(this.countW,this.countX);
+		    this.countY = 0;
+		}
+		else {
+		    next.xy(this.x,this.y);
+		    if (0 == this.countY)
+			this.dx = (D0+next.width);
+		    else
+			this.dx = Math.max(this.dx,(D0+next.width));
+		    this.dy = (D0+next.height);
+		    this.countY += 1;
+		    this.countH = Math.max(this.countH,this.countY);
+		}
+		return Layout.Cursor.Relation.Vertical;
+
+	    default:
+		throw new Error(this.dir.name());
+	    }
+	}
+	public Cursor finish(int sw, int sh){
 	    this.x = X0;
 	    this.y = Y0;
-	    this.dx = D0;
-	    this.dy = D0;
+
+	    this.dx = Math.max(0,((sw - D2)/ (this.countW)));
+	    this.dy = Math.max(0,((sh - D2)/ (this.countH)));
+
 	    this.dir = Direction.Horizontal;
+
+	    this.countX = 0;
+	    this.countY = 0;
 	    return this;
 	}
-	public Layout.Cursor.Relation layout(libra.sch.Component prev, libra.sch.Component next){
-	    if (null == next.layoutRelation){
-		/*
-		 * First pass, basic positioning
-		 */
-		switch(this.dir){
-		case Horizontal:
-		    if (null == prev){
-			this.y = Y0;
-			next.xy(this.x,this.y);
-			this.x += (this.dx + next.width);
-			return Layout.Cursor.Relation.Left;
-		    }
-		    else {
-			this.y = Y0;
-			next.xy(this.x,this.y);
-			this.x += (this.dx + next.width);
-			return Layout.Cursor.Relation.Right;
-		    }
-		case Vertical:
-		    if (null == prev || prev.layoutRelation.isHorizontal()){
-			this.y = (Y0 + this.height_max) - (next.height);
-			next.xy(this.x,this.y);
-			this.y -= this.dy;
-			if (Y0 > this.y){
-			    this.x += (this.dx + next.width);
-			    this.y = (Y0 + this.height_max);
-			}
-			return Layout.Cursor.Relation.Over;
-		    }
-		    else {
-			this.y -= next.height;
-			if (Y0 > this.y){
-			    this.x += (this.dx + next.width);
-			    this.y = (Y0 + this.height_max) - (next.height);
-			}
-			next.xy(this.x,this.y);
-			this.y -= this.dy;
-			if (Y0 > this.y){
-			    this.x += (this.dx + next.width);
-			    this.y = (Y0 + this.height_max);
-			}
-			return Layout.Cursor.Relation.Under;
-		    }
-		default:
-		    throw new Error(this.dir.name());
-		}
+	public void finish(libra.sch.Component prev, libra.sch.Component next){
+	    if (next.isLayoutHorizontal()){
+		this.countX += 1;
+		this.countY = 1;
 	    }
 	    else {
-		/*
-		 * Second pass, finish positioning
-		 */
-		switch(next.layoutRelation){
-		case Left:
-
-		    return next.layoutRelation;
-		case Right:
-
-		    return next.layoutRelation;
-		case Over:
-
-		    return next.layoutRelation;
-		case Under:
-
-		    return next.layoutRelation;
-		default:
-		    throw new Error(next.layoutRelation.name());
-		}
+		this.countY += 1;
 	    }
+	    next.x1 += ((this.countX * this.dx)-(next.width>>1));
+	    next.y1 += ((this.countY * this.dy)-(next.height>>1));
+	    next.xy(false);
 	}
     }
     public enum Position {

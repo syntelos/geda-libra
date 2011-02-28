@@ -2,6 +2,7 @@ package libra.sch;
 
 import libra.Attribute;
 import libra.Layout;
+import libra.Lib;
 import libra.Pin;
 import libra.Symbol;
 
@@ -18,21 +19,23 @@ public class Component
 
     private Net[] nets;
 
-    /*
-     * First and second layout passes are known by this field being
-     * null on the first pass and not null on the second.
-     */
-    public Layout.Cursor.Relation layoutRelation;
+    public Layout.Cursor.Relation layout;
 
 
     /**
      * Schematic component
      */
     public Component(String[] line){
-	super(Attribute.Type.P);
+	super(Attribute.Type.C);
 	if (2 < line.length){
-	    this.name = line[0];
+	    this.name = Lib.Basename(line[0]);
 	    this.symbol = Lib.For(this.name);
+	    this.componentName = this.name+".sym";
+	    this.componentSymbol = this.symbol;
+	    this.selectable = 1;
+
+	    this.copy(this.symbol.getBounds());
+
 	    this.add(line);
 	}
 	else
@@ -54,7 +57,23 @@ public class Component
     }
     public void layout(Component prev, Layout.Cursor cursor){
 
-	this.layoutRelation = cursor.layout(prev,this);
+	this.layout = cursor.layout(prev,this);
+    }
+    public void finish(Component prev, Layout.Cursor cursor){
+
+	cursor.finish(prev,this);
+    }
+    public boolean isLayoutHorizontal(){
+	if (null != this.layout)
+	    return this.layout.isHorizontal();
+	else
+	    return false;
+    }
+    public boolean isLayoutVertical(){
+	if (null != this.layout)
+	    return this.layout.isVertical();
+	else
+	    return false;
     }
     public java.lang.Iterable<Net> nets(){
 	return new Net.Iterable(this.nets);

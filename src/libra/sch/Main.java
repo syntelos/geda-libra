@@ -1,7 +1,9 @@
 package libra.sch;
 
 import libra.GedaHome;
+import libra.Lib;
 import libra.Pin;
+import libra.Rectangle;
 import libra.Symbol;
 
 import java.io.File ;
@@ -14,7 +16,9 @@ import java.io.PrintStream ;
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
-public class Main {
+public class Main
+    extends libra.io.FileIO
+{
 
     public static void Usage(){
 	System.out.println("Usage");
@@ -151,7 +155,7 @@ public class Main {
 		if (cc < argc){
 		    arg = argv[cc];
 		    generateSchematicFrom = new File(arg);
-		    if (!generateSchematicFrom.isFile()){
+		    if (!generateSchematicFrom.exists()){
 			System.err.printf("Error, file not found '%s'.%n",generateSchematicFrom.getPath());
 			System.exit(1);
 		    }
@@ -174,27 +178,41 @@ public class Main {
 	    case P:
 		cc += 1;
 		if (cc < argc){
-		    arg = Lib.Basename(argv[cc]);
-		    if (0 < arg.length() && '-' != arg.charAt(0)){
-			symbolNames = new String[]{arg};
-			for (int tt = (cc+1); tt < argc; tt++){
-			    arg = Lib.Basename(argv[tt]);
-			    if (0 < arg.length()){
-				if ('-' == arg.charAt(0))
-				    break;
-				else {
-				    int len = symbolNames.length;
-				    String[] copier = new String[len+1];
-				    System.arraycopy(symbolNames,0,copier,0,len);
-				    copier[len] = arg;
-				    symbolNames = copier;
-				    cc = tt;
+		    arg = argv[cc];
+		    File p = new File(arg);
+		    if (p.isDirectory()){
+			File[] plist = ListFiles(p,".sym");
+			if (null != plist){
+			    final int count = plist.length;
+			    symbolNames = new String[count];
+			    for (int c = 0; c < count; c++){
+				symbolNames[c] = Lib.Basename(plist[c].getName());
+			    }
+			}
+			else {
+			    System.err.printf("Error, symbol files '*.sym' not found in directory '%s'.%n",arg);
+			    System.exit(1);
+			}
+		    }
+		    else {
+			arg = Lib.Basename(argv[cc]);
+			if (0 < arg.length() && '-' != arg.charAt(0)){
+			    symbolNames = new String[]{arg};
+			    for (int tt = (cc+1); tt < argc; tt++){
+				arg = Lib.Basename(argv[tt]);
+				if (0 < arg.length()){
+				    if ('-' == arg.charAt(0))
+					break;
+				    else {
+					symbolNames = Pin.Add(symbolNames,arg);
+					cc = tt;
+				    }
 				}
 			    }
 			}
+			else
+			    Usage();
 		    }
-		    else
-			Usage();
 		}
 		else
 		    Usage();
@@ -221,27 +239,67 @@ public class Main {
 		throw new Error(opt.name());
 	    }
 	}
+	/*
+	 * Generate Schematic
+	 */
 	if (null != generateSchematicFrom){
 	    if (GedaHome.Found()){
 		if (Lib.Found()){
-		    try {
-			Schematic schematic = new Schematic(generateSchematicFrom);
+		    if (generateSchematicFrom.isDirectory()){
+			File dst;
+			for (File src: ListFiles(generateSchematicFrom,".csv")){
 
-			if (null != schematicFile){
+			    try {
+				Schematic schematic = new Schematic(src);
 
-			    schematic.write(schematicFile);
+				if (null != schematicFile){
 
-			    System.err.printf("Wrote '%s'%n",schematicFile);
+				    if (schematicFile.isDirectory()){
+					dst = FilenameMap(src,schematicFile,"sch");
+				    }
+				    else
+					dst = schematicFile;
+
+				    schematic.write(dst);
+
+				    System.err.printf("Wrote '%s'%n",dst);
+				}
+				else {
+
+				    schematic.write(System.out);
+				}
+				System.exit(0);
+			    }
+			    catch (Exception exc){
+				exc.printStackTrace();
+				System.exit(1);
+			    }
 			}
-			else {
-
-			    schematic.write(System.out);
-			}
-			System.exit(0);
 		    }
-		    catch (Exception exc){
-			exc.printStackTrace();
-			System.exit(1);
+		    else {
+			try {
+			    Schematic schematic = new Schematic(generateSchematicFrom);
+
+			    if (null != schematicFile){
+
+				if (schematicFile.isDirectory()){
+				    schematicFile = FilenameMap(generateSchematicFrom,schematicFile,"sch");
+				}
+
+				schematic.write(schematicFile);
+
+				System.err.printf("Wrote '%s'%n",schematicFile);
+			    }
+			    else {
+
+				schematic.write(System.out);
+			    }
+			    System.exit(0);
+			}
+			catch (Exception exc){
+			    exc.printStackTrace();
+			    System.exit(1);
+			}
 		    }
 		}
 		else {
@@ -254,6 +312,9 @@ public class Main {
 		System.exit(1);
 	    }
 	}
+	/*
+	 * Generate Table
+	 */
 	else if (null != symbolNames){
 	    final int count = symbolNames.length;
 	    /*
@@ -262,12 +323,19 @@ public class Main {
 	    for (int cc = 0; cc < count; cc++){
 		symbols[cc] = Lib.For(symbolNames[cc]);
 	    }
+	    Rectangle.SortDescending(symbols);
 	    /*
 	     */
 	    PrintStream out = System.out;
 	    try {
 		if (null != generateTableTo){
-		    out = new PrintStream(new FileOutputStream(generateTableTo));
+		    if (generateTableTo.isDirectory()){
+			String filename = Cat("schematic",'-',symbolNames,".csv");
+			generateTableTo = new File(generateTableTo,filename);
+			out = new PrintStream(new FileOutputStream(generateTableTo));
+		    }
+		    else
+			out = new PrintStream(new FileOutputStream(generateTableTo));
 		}
 		try {
 		    out.println("Title,");
@@ -278,7 +346,8 @@ public class Main {
 		    for (int cc = 0; cc < count; cc++){
 			Symbol symbol = symbols[cc];
 			for (Pin pin: symbol.pins()){
-			    out.printf("%s,%s,%s%n",symbolNames[cc],pin.number,pin.nameString(' '));
+			    if (pin.isNotPassive())
+				out.printf("%s,%s,%s%n",symbolNames[cc],pin.number,pin.getName(0));
 			}
 		    }
 		}

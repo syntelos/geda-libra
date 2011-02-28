@@ -9,7 +9,9 @@ import java.io.File ;
  * 
  * @author John Pritchard <jdp@ulsf.net>
  */
-public class Main {
+public class Main
+    extends libra.io.FileIO
+{
 
     public static void Usage(){
 	System.out.println("Usage");
@@ -131,7 +133,7 @@ public class Main {
 		if (cc < argc){
 		    arg = argv[cc];
 		    inf = new File(arg);
-		    if (!inf.isFile()){
+		    if (!inf.exists()){
 			System.err.printf("Error, file not found '%s'.%n",inf.getPath());
 			System.exit(1);
 		    }
@@ -154,17 +156,47 @@ public class Main {
 	}
 	if (null != inf){
 	    try {
-		Symbol symbol = new Symbol(inf);
+		if (inf.isDirectory()){
+		    File dst;
+		    for (File src : ListFiles(inf,".csv")){
 
-		if (null != sf){
+			Symbol symbol = new Symbol(src);
 
-		    symbol.write(sf);
+			if (null != sf){
 
-		    System.err.printf("Wrote '%s'%n",sf);
+			    if (sf.isDirectory()){
+				dst = FilenameMap(src,sf,"sym");
+			    }
+			    else
+				dst = sf;
+
+			    symbol.write(dst);
+
+			    System.err.printf("Wrote '%s'%n",dst);
+			}
+			else {
+
+			    symbol.write(System.out);
+			}
+		    }
 		}
 		else {
+		    Symbol symbol = new Symbol(inf);
 
-		    symbol.write(System.out);
+		    if (null != sf){
+
+			if (sf.isDirectory()){
+			    sf = FilenameMap(inf,sf,"sym");
+			}
+
+			symbol.write(sf);
+
+			System.err.printf("Wrote '%s'%n",sf);
+		    }
+		    else {
+
+			symbol.write(System.out);
+		    }
 		}
 		System.exit(0);
 	    }

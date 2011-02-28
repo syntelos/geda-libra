@@ -1,0 +1,5 @@
+C 0 0 0 0 0 title-bordered-C.sym
+C 2000 9800 1 0 0 Libra.sym
+C 3591 7400 1 0 0 ADXL345.sym
+C 10270 8550 1 0 0 DS1077.sym
+C 14348 8050 1 0 0 HMC5834.sym

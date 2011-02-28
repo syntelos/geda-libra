@@ -1,4 +1,4 @@
-package libra.sch;
+package libra;
 
 import libra.Symbol;
 

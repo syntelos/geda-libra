@@ -128,6 +128,7 @@ public class Attribute
 	    this.angle2 = Integer.parseInt(strtok.nextToken());
 	    this.pitch2 = Integer.parseInt(strtok.nextToken());
 	    this.rect(true);
+	    this.num_lines = 0;
 	    break;
 	case C:
 	    this.x1 = Integer.parseInt(strtok.nextToken());
@@ -136,6 +137,7 @@ public class Attribute
 	    this.angle = Integer.parseInt(strtok.nextToken());
 	    this.mirror = Integer.parseInt(strtok.nextToken());
 	    this.componentName = strtok.nextToken();
+	    this.num_lines = 0;
 	    break;
 	case P:
 	    this.x1 = Integer.parseInt(strtok.nextToken());
@@ -146,6 +148,7 @@ public class Attribute
 	    this.pintype = Integer.parseInt(strtok.nextToken());
 	    this.whichend = Integer.parseInt(strtok.nextToken());
 	    this.rect(true);
+	    this.num_lines = 0;
 	    break;
 	case T:
 	    this.x1 = Integer.parseInt(strtok.nextToken());
@@ -189,8 +192,10 @@ public class Attribute
 	    this.pitch1 = Integer.parseInt(strtok.nextToken());
 	    this.angle2 = Integer.parseInt(strtok.nextToken());
 	    this.pitch2 = Integer.parseInt(strtok.nextToken());
+	    this.num_lines = 0;
 	    break;
 	case v:
+	    this.num_lines = 0;
 	    break;
 	default:
 	    throw new Error(this.type.name());
@@ -250,6 +255,18 @@ public class Attribute
 	    return (null != this.name && "pinlabel".equals(this.name));
 	else
 	    return false;
+    }
+    public Symbol getComponentSymbol(){
+	if (null != this.componentName){
+	    Symbol component = this.componentSymbol;
+	    if (null == component){
+		component = Lib.For(this.componentName);
+		this.componentSymbol = component;
+	    }
+	    return component;
+	}
+	else
+	    return null;
     }
     public Symbol getComponentTitleblock(){
 	if (null != this.componentName){
@@ -776,7 +793,7 @@ public class Attribute
 				   " %d %d %d %s",
 				   this.type,
 				   this.x1,              this.y1, 
-				   this.selectable,      this.angle,           this.mirror,          this.componentName);
+				   this.selectable,      this.angle,           this.mirror,          Symbol.Name(this.componentName));
 	    break;
 	case P:
 	    parent = String.format("%s"+

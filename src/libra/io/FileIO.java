@@ -1,5 +1,7 @@
 package libra.io;
 
+import java.io.File;
+
 public abstract class FileIO
     extends Object
 {
@@ -45,5 +47,56 @@ public abstract class FileIO
 	    }
 	}
 	return indeces;
+    }
+    public final static File FilenameMap(File src, File tgt, String fext){
+	if (tgt.isDirectory() && src.isFile()){
+
+	    if ('.' == fext.charAt(0))
+		return new File(tgt, Basename(src.getName())+fext);
+	    else
+		return new File(tgt, Basename(src.getName())+'.'+fext);
+	}
+	else
+	    throw new IllegalArgumentException();
+    }
+    public final static class FilenameFilter
+	extends Object
+	implements java.io.FilenameFilter
+    {
+	public final String suffix;
+
+	public FilenameFilter(String suffix){
+	    super();
+	    if (null != suffix)
+		this.suffix = suffix;
+	    else
+		throw new IllegalArgumentException();
+	}
+
+	public boolean accept(File dir, String name){
+	    return name.endsWith(this.suffix);
+	}
+    }
+    public final static File[] ListFiles(File dir, String suffix){
+	return dir.listFiles(new FilenameFilter(suffix));
+    }
+    public final static String Cat(String prefix, char sep, String[] infix, String suffix){
+	if (null != prefix){
+	    StringBuilder string = new StringBuilder();
+	    string.append(prefix);
+	    if (null != infix){
+		for (String in: infix){
+		    string.append(sep);
+		    string.append(in);
+		}
+	    }
+	    if (null != suffix){
+
+		string.append(suffix);
+	    }
+	    return string.toString();
+	}
+	else
+	    throw new IllegalArgumentException();
     }
 }

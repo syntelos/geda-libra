@@ -193,7 +193,12 @@ public class Schematic
 	return this.size;
     }
     public Schematic setSize(String size){
-	return this.setSize(size.trim().toUpperCase().charAt(0));
+	if (null != size){
+	    size = size.trim();
+	    if (0 < size.length())
+		return this.setSize(size.toUpperCase().charAt(0));
+	}
+	return this;
     }
     public Schematic setSize(char size){
 	this.size = size;
@@ -246,28 +251,12 @@ public class Schematic
 	    }
 	    Layout.Cursor cursor = new Layout.Cursor(width_min, width_max, height_min, height_max);
 	    /*
-	     * Primary layout is a horizontal L2R, while small (<= 50%)
-	     * components are stacked vertically T2B.
+	     * Layout is a horizontal, with contiguous small (<= 50%)
+	     * components stacked vertically
 	     */
 	    {
 		Component prev = null, next;
-		/*
-		 * First pass, basic positioning
-		 */
-		for (int cc = 0; cc < count; cc++){
 
-		    next = this.get(cc);
-
-		    cursor.small(small[cc]);
-
-		    next.layout(prev,cursor);
-		    prev = next;
-		}
-		/*
-		 * Second pass, finish positioning
-		 */
-		cursor.reset();
-		prev = null;
 		for (int cc = 0; cc < count; cc++){
 
 		    next = this.get(cc);
@@ -285,10 +274,35 @@ public class Schematic
 
 	    Symbol titleblock = this.getComponentTitleblock();
 	    if (null == titleblock){
-
+		titleblock = GedaHome.Titleblock(layout);
+		if (null == titleblock)
+		    throw new IllegalStateException(String.format("Layout too large (%dx%d) for existing titleblocks",layout.width,layout.height));
+		else {
+		    this.componentName = titleblock.part;
+		    this.componentSymbol = titleblock;
+		}
 	    }
-	    else {
+	    /*
+	     * Layout finishing
+	     */
+	    final Rectangle space = titleblock.getInnerBoundsTitleblock();
 
+	    final int sw = (space.width-layout.width);
+	    final int sh = (space.height-layout.height);
+
+	    cursor.finish(sw,sh);
+	    {
+		Component prev = null, next;
+
+		for (int cc = 0; cc < count; cc++){
+
+		    next = this.get(cc);
+
+		    cursor.small(small[cc]);
+
+		    next.finish(prev,cursor);
+		    prev = next;
+		}
 	    }
 	    return true;
 	}

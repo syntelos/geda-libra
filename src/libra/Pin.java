@@ -105,7 +105,7 @@ public class Pin
 
 	    if (1 < line.length){
 
-		this.namein = Add(this.namein,line[1]);
+		this.namein = Add(this.namein,new StringTokenizer(line[1]," \t"));
 
 		if (2 < line.length){
 
@@ -117,6 +117,18 @@ public class Pin
 	}
 	else
 	    return false;
+    }
+    public int countName(){
+	if (null == this.namein)
+	    return 0;
+	else
+	    return this.namein.length;
+    }
+    public String getName(int idx){
+	if (-1 < idx && idx < this.countName())
+	    return this.namein[idx];
+	else
+	    return null;
     }
     public String getName(){
 	if (null == this.name){
@@ -138,6 +150,18 @@ public class Pin
 	    strbuf.append(name);
 	}
 	return strbuf.toString();
+    }
+    public int countType(){
+	if (null == this.typein)
+	    return 0;
+	else
+	    return this.typein.length;
+    }
+    public Pin.Type getType(int idx){
+	if (-1 < idx && idx < this.countType())
+	    return this.typein[idx];
+	else
+	    return null;
     }
     public Pin.Type getType(){
 	if (null == this.type){
@@ -170,6 +194,12 @@ public class Pin
 	    }
 	}
 	return this.type;
+    }
+    public boolean isPassive(){
+	return (Type.pas == this.getType());
+    }
+    public boolean isNotPassive(){
+	return (Type.pas != this.getType());
     }
     public Layout.Position getPosition(Layout layout){
 	if (null == this.posit)
@@ -286,6 +316,34 @@ public class Pin
 	    String[] copier = new String[len+1];
 	    System.arraycopy(list,0,copier,0,len);
 	    copier[len] = item;
+	    return copier;
+	}
+    }
+    public final static String[] Add(String[] list, StringTokenizer item){
+	if (null == item)
+	    return list;
+	else if (null == list){
+	    final int count = item.countTokens();
+	    if (1 > count)
+		return null;
+	    else {
+		list = new String[count];
+		for (int cc = 0; cc < count; cc++){
+		    list[cc] = item.nextToken();
+		}
+		return list;
+	    }
+	}
+	else {
+	    final int len = list.length;
+	    final int count = item.countTokens();
+
+	    String[] copier = new String[len+count];
+	    System.arraycopy(list,0,copier,0,len);
+
+	    for (int cc = 0; cc < count; cc++){
+		copier[len+cc] = item.nextToken();
+	    }
 	    return copier;
 	}
     }

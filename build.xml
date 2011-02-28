@@ -63,4 +63,43 @@
 
   </target>
 
+  <target name="test-sym" description="Run sym on 'test/sym/src' files">
+
+    <java jar="sym.jar" fork="true">
+      <arg value="-i" />
+      <arg value="test/sym/src" />
+      <arg value="-s" />
+      <arg value="test/sym/dst" />
+    </java>
+  </target>
+
+  <target name="test-sch" description="Run sch on 'test/sch/src' files">
+
+    <java jar="sch.jar" fork="true">
+      <arg value="-l" />
+      <arg value="test/sym/src" />
+      <arg value="-p" />
+      <arg value="test/sym/dst" />
+      <arg value="-t" />
+      <arg value="test/sch/src" />
+    </java>
+
+    <java jar="sch.jar" fork="true">
+      <arg value="-l" />
+      <arg value="test/sym/src" />
+      <arg value="-i" />
+      <arg value="test/sch/src" />
+      <arg value="-s" />
+      <arg value="test/sch/dst" />
+    </java>
+  </target>
+
+  <target name="test" depends="all" description="Run tests">
+
+    <antcall target="test-sym"/>
+
+    <antcall target="test-sch"/>
+
+  </target>
+
 </project>
