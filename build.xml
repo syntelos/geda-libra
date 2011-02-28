@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="libra" default="all">
+<project name="libra" default="jar">
 
   <property name="src" location="src"/>
   <property name="lib" location="lib"/>
@@ -10,7 +10,7 @@
   <property name="sch.target.jar" value="sch.jar"/>
   <property name="svg.target.jar" value="svg.jar"/>
 
-  <target name="all">
+  <target name="jar">
 
     <antcall target="compile"/>
     <delete>
@@ -19,9 +19,9 @@
       </fileset>
     </delete>
 
-    <antcall target="sym"/>
-    <antcall target="sch"/>
-    <antcall target="svg"/>
+    <antcall target="jar-sym"/>
+    <antcall target="jar-sch"/>
+    <antcall target="jar-svg"/>
 
     <delete>
       <fileset dir="${bin}">
@@ -42,17 +42,17 @@
 
   </target>
 
-  <target name="sym" depends="compile">
+  <target name="jar-sym" depends="compile">
 
     <jar jarfile="${sym.target.jar}" basedir="${bin}" manifest="${src}/libra/sym/Manifest.mf" />
   </target>
 
-  <target name="sch" depends="compile">
+  <target name="jar-sch" depends="compile">
 
     <jar jarfile="${sch.target.jar}" basedir="${bin}" manifest="${src}/libra/sch/Manifest.mf" />
   </target>
 
-  <target name="svg" depends="compile">
+  <target name="jar-svg" depends="compile">
 
     <jar jarfile="${svg.target.jar}" basedir="${bin}" manifest="${src}/libra/svg/Manifest.mf" />
   </target>
@@ -94,7 +94,7 @@
     </java>
   </target>
 
-  <target name="test" depends="all" description="Run tests">
+  <target name="test" depends="jar" description="Run tests">
 
     <antcall target="test-sym"/>
 

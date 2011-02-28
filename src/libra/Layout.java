@@ -137,9 +137,7 @@ public class Layout {
 	    else {
 		this.countY += 1;
 	    }
-	    next.x1 += ((this.countX * this.dx)-(next.width>>1));
-	    next.y1 += ((this.countY * this.dy)-(next.height>>1));
-	    next.xy(false);
+	    next.dxy1( (this.countX * this.dx), Math.max(0,((this.countY * this.dy)-(next.height>>1))));
 	}
     }
     public enum Position {

@@ -13,3 +13,16 @@ driven project.
     svg
 
         Manipulate SVG Path "d" data for use in GSCHEM.  See svg.txt
+
+TODO
+
+    sch
+
+        Fix layout "finish stage" for clearance within layout space.
+
+        Differentiate symbols on having pins or not.  Symbols without pins are logo/graphics.
+
+        Place nets: typed, oriented, and positioned for their respective pins.
+
+        Read an existing file and preserve "extra" information.
+
