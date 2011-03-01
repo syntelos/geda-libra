@@ -312,8 +312,8 @@ public class Schematic
     public boolean markup(){
 	return true;
     }
-    public java.lang.Iterable<Component> components(){
-	return new Component.Iterable(this.components);
+    public java.lang.Iterable<Attribute> components(){
+	return this.iterator(Attribute.Type.C);
     }
     public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
 	if (Attribute.Type.C == type && null != this.components)
@@ -336,6 +336,5 @@ public class Schematic
 	}
 	else
 	    return super.getBounds(type);
-
     }
 }

@@ -1,5 +1,6 @@
 package libra.sch;
 
+import libra.Attribute;
 import libra.GedaHome;
 import libra.Lib;
 import libra.Pin;
@@ -345,7 +346,8 @@ public class Main
 		    out.println("Component,Pin,Signal");
 		    for (int cc = 0; cc < count; cc++){
 			Symbol symbol = symbols[cc];
-			for (Pin pin: symbol.pins()){
+			for (Attribute ap: symbol.pins()){
+			    Pin pin = (Pin)ap;
 			    if (pin.isNotPassive())
 				out.printf("%s,%s,%s%n",symbolNames[cc],pin.number,pin.getName(0));
 			}

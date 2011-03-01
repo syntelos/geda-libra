@@ -233,7 +233,8 @@ public class Layout {
 
 	    if (null == this.size){
 
-		for (Pin p: s.pins()){
+		for (Attribute ap: s.pins()){
+		    Pin p = (Pin)ap;
 		    Layout.Position lp = p.getPosition(this);
 		    switch(lp){
 		    case T:

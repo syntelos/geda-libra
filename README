@@ -18,6 +18,8 @@ TODO
 
     sch
 
+        Fix pin iteration, see test/schematic..sch
+
         Fix layout "finish stage" for clearance within layout space.
 
         Differentiate symbols on having pins or not.  Symbols without pins are logo/graphics.

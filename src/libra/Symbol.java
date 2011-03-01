@@ -356,7 +356,8 @@ public class Symbol
 	}
 	b.init();
 
-	for (Pin p: this.pins()){
+	for (Attribute ap: this.pins()){
+	    Pin p = (Pin)ap;
 	    switch(p.getPosition(this.layout)){
 	    case T:
 		b.top();
@@ -462,8 +463,8 @@ public class Symbol
 	else
 	    return false;
     }
-    public java.lang.Iterable<Pin> pins(){
-	return new Pin.Iterable(this.pins);
+    public java.lang.Iterable<Attribute> pins(){
+	return this.iterator(Attribute.Type.P);
     }
     public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
 	if (Attribute.Type.P == type && null != this.pins)
