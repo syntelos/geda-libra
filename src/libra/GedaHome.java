@@ -160,8 +160,8 @@ public class GedaHome
 
 	    if (space.width >= req.width && space.height >= req.height){
 
-		if (req.width+Layout.Cursor.X0 <= space.width &&
-		    req.height+Layout.Cursor.Y0 <= space.height)
+		if (req.width+Layout.Cursor.D2 <= space.width &&
+		    req.height+Layout.Cursor.D2 <= space.height)
 		{
 		    return titleblock;
 		}

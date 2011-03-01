@@ -13,9 +13,10 @@ import java.util.StringTokenizer;
  * Parse a gEDA/gaf file into a list of attributes.
  */
 public class GAF
-    extends Object
+    extends libra.io.FileIO
     implements Iterable<Attribute>
 {
+    public final String name;
 
     public Attribute[] attributes;
 
@@ -23,24 +24,25 @@ public class GAF
     public GAF(File file)
 	throws IOException
     {
-	this(new FileInputStream(file));
+	this(file,(new FileInputStream(file)));
     }
-    private GAF(InputStream in)
+    private GAF(File file, InputStream in)
 	throws IOException
     {
-	this(new InputStreamReader(in,"US-ASCII"));
+	this(file,(new InputStreamReader(in,"US-ASCII")));
     }
-    private GAF(Reader in)
+    private GAF(File file, Reader in)
 	throws IOException
     {
-	this(new BufferedReader(in));
+	this(file,(new BufferedReader(in)));
     }
-    private GAF(BufferedReader in)
+    private GAF(File file, BufferedReader in)
 	throws IOException
     {
 	super();
-	int lno = 0;
+	this.name = Basename(file.getName());
 	try {
+	    int lno = 0;
 	    String line;
 	    Attribute[] list = null;
 	    Attribute current = null, last = null;

@@ -42,6 +42,10 @@ public class Lib
 	    File symf = new File(Directory,name+".csv");
 	    try {
 		sym = new Symbol(symf);
+
+		if (null == sym.part)
+		    sym.part = name;
+
 		if (sym.layout()){
 		    if (sym.markup())
 			Map.put(name,sym);

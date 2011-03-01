@@ -10,8 +10,9 @@ import java.io.Reader ;
 import java.util.StringTokenizer;
 
 public class CSV
-    extends Object
+    extends libra.io.FileIO
 {
+    public final String name;
 
     public final String[][] content;
 
@@ -19,22 +20,23 @@ public class CSV
     public CSV(File file)
 	throws IOException
     {
-	this(new FileInputStream(file));
+	this(file,new FileInputStream(file));
     }
-    private CSV(InputStream in)
+    private CSV(File file, InputStream in)
 	throws IOException
     {
-	this(new InputStreamReader(in,"US-ASCII"));
+	this(file,(new InputStreamReader(in,"US-ASCII")));
     }
-    private CSV(Reader in)
+    private CSV(File file, Reader in)
 	throws IOException
     {
-	this(new BufferedReader(in));
+	this(file,(new BufferedReader(in)));
     }
-    private CSV(BufferedReader in)
+    private CSV(File file, BufferedReader in)
 	throws IOException
     {
 	super();
+	this.name = Basename(file.getName());
 	try {
 	    String line;
 	    String[][] list = null;

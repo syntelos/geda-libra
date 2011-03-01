@@ -41,7 +41,7 @@ public class Layout {
 	    }
 	}
 
-	public final static int X0 = 2000, Y0 = 2000, D0 = 2000, D2 = (D0<<1);
+	public final static int X0 = 2000, Y0 = 3000, D0 = 3000, D2 = (D0<<1);
 
 
 	public final int width_min, width_max, height_min, height_max;

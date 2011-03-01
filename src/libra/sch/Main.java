@@ -349,7 +349,7 @@ public class Main
 			for (Attribute ap: symbol.pins()){
 			    Pin pin = (Pin)ap;
 			    if (pin.isNotPassive())
-				out.printf("%s,%s,%s%n",symbolNames[cc],pin.number,pin.getName(0));
+				out.printf("%s,%s,%s%n",symbol.part,pin.number,pin.getName(0));
 			}
 		    }
 		}
