@@ -30,7 +30,7 @@ public class Attribute
     }
 
     public enum Type {
-	B, C, P, T, H, V, v;
+	B, C, L, P, T, H, V, v;
 
 	private final static Type[] Values = Type.values();
 	public final static Type For(int ordinal){
@@ -138,6 +138,18 @@ public class Attribute
 	    this.mirror = Integer.parseInt(strtok.nextToken());
 	    this.componentName = strtok.nextToken();
 	    this.num_lines = 0;
+	    break;
+	case L:
+	    this.x1 = Integer.parseInt(strtok.nextToken());
+	    this.y1 = Integer.parseInt(strtok.nextToken());
+	    this.x2 = Integer.parseInt(strtok.nextToken());
+	    this.y2 = Integer.parseInt(strtok.nextToken());
+	    this.color = Color.For(strtok.nextToken());
+	    this.linewidth = Integer.parseInt(strtok.nextToken());
+	    this.capstyle = Integer.parseInt(strtok.nextToken());
+	    this.dashtype = Integer.parseInt(strtok.nextToken());
+	    this.dashlength = Integer.parseInt(strtok.nextToken());
+	    this.dashspace = Integer.parseInt(strtok.nextToken());
 	    break;
 	case P:
 	    this.x1 = Integer.parseInt(strtok.nextToken());
@@ -356,6 +368,14 @@ public class Attribute
 	this.alignment = alignment;
 	return this;
     }
+    public Attribute show(Show show){
+	if (null != show){
+	    this.show = show;
+	    return this;
+	}
+	else
+	    throw new IllegalArgumentException();
+    }
     /**
      * @return Geometric dimension of text string defined by show.
      */
@@ -438,6 +458,9 @@ public class Attribute
 	    this.y2 = (this.y1 + this.height);
 	}
 	return this.attachChildren();
+    }
+    public Attribute text(String name, String value, int color, int size, int visibility){
+	return this.text(name,value,Color.For(color),size,visibility);
     }
     public Attribute text(String name, String value, Color color, int size, int visibility){
 	this.name = name;
@@ -546,6 +569,17 @@ public class Attribute
 	    break;
 	}
 	return logicbubble;
+    }
+    public Attribute line(int x1, int y1, int x2, int y2, int c){
+	return this.line(x1,y1,x2,y2,Color.For(c));
+    }
+    public Attribute line(int x1, int y1, int x2, int y2, Color c){
+	this.x1 = x1;
+	this.y1 = y1;
+	this.x2 = x2;
+	this.y2 = y2;
+	this.color = c;
+	return this;
     }
     public String text(){
 	switch(this.type){
@@ -794,6 +828,16 @@ public class Attribute
 				   this.type,
 				   this.x1,              this.y1, 
 				   this.selectable,      this.angle,           this.mirror,          Symbol.Name(this.componentName));
+	    break;
+	case L:
+	    parent = String.format("%s"+
+				   " %d %d %d %d"+
+				   " %d %d %d"+
+				   " %d %d %d",
+				   this.type,
+				   this.x1,              this.y1,              this.x2,              this.y2,
+				   this.color.ordinal(), this.linewidth,       this.capstyle,
+				   this.dashtype,        this.dashlength,      this.dashspace);
 	    break;
 	case P:
 	    parent = String.format("%s"+

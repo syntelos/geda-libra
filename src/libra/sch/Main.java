@@ -98,6 +98,11 @@ public class Main
 	System.out.println("                          to");
 	System.out.println("                              lib");
 	System.out.println();
+	System.out.println("    -n lib                Directory containing net symbol");
+	System.out.println("                          files.  This location defaults");
+	System.out.println("                          to");
+	System.out.println("                              lib");
+	System.out.println();
 	System.out.println("  For example");
 	System.out.println();
 	System.out.println("        java -jar sch.jar -i test/sch/src/schematic-0.csv \\");
@@ -112,7 +117,7 @@ public class Main
 	System.exit(1);
     }
     public enum Opt {
-	G, H, I, L, P, S, T;
+	G, H, I, L, N, P, S, T;
 
 	public static Opt For(String arg){
 	    while (0 < arg.length() && '-' == arg.charAt(0))
@@ -168,7 +173,19 @@ public class Main
 		cc += 1;
 		if (cc < argc){
 		    arg = argv[cc];
-		    if (!Lib.Define(new File(arg))){
+		    if (!Lib.Sources(new File(arg))){
+			System.err.printf("Error, directory not found '%s'.%n",arg);
+			System.exit(1);
+		    }
+		}
+		else
+		    Usage();
+		break;
+	    case N:
+		cc += 1;
+		if (cc < argc){
+		    arg = argv[cc];
+		    if (!Lib.Targets(new File(arg))){
 			System.err.printf("Error, directory not found '%s'.%n",arg);
 			System.exit(1);
 		    }

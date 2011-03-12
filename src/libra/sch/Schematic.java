@@ -132,7 +132,9 @@ public class Schematic
 	else
 	    throw new IllegalStateException("Missing layout.");
     }
-    public boolean add(String[] line, boolean once){
+    public boolean add(String[] line, boolean once)
+	throws IOException
+    {
 
 	final Row row = Row.For(line[0],once);
 

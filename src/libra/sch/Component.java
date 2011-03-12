@@ -6,6 +6,8 @@ import libra.Lib;
 import libra.Pin;
 import libra.Symbol;
 
+import java.io.IOException;
+
 /**
  * Schematic component
  */
@@ -15,7 +17,7 @@ public class Component
 
     public final String name;
 
-    public final Symbol symbol;
+    protected Symbol symbol;
 
     private Net[] nets;
 
@@ -25,27 +27,29 @@ public class Component
     /**
      * Schematic component
      */
-    public Component(String[] line){
+    public Component(String[] line)
+	throws IOException
+    {
+	this(Lib.Basename(line[0]));
+	this.symbol = Lib.For(this.name);
+	this.componentName = this.name+".sym";
+	this.componentSymbol = this.symbol;
+	this.selectable = 1;
+
+	this.copy(this.symbol.getBounds());
+
+	this.add(line);
+    }
+    protected Component(String name){
 	super(Attribute.Type.C);
-	if (2 < line.length){
-	    this.name = Lib.Basename(line[0]);
-	    this.symbol = Lib.For(this.name);
-	    this.componentName = this.name+".sym";
-	    this.componentSymbol = this.symbol;
-	    this.selectable = 1;
-
-	    this.copy(this.symbol.getBounds());
-
-	    this.add(line);
-	}
-	else
-	    throw new IllegalArgumentException();
+	this.name = name;
     }
 
-
-    public boolean add(String[] line){
+    public boolean add(String[] line)
+	throws IOException
+    {
 	if (this.name.equals(line[0])){
-	    this.add(new Net(line));
+	    this.add(new Net(this.symbol,line));
 	    return true;
 	}
 	else

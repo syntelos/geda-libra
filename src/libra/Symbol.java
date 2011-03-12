@@ -250,6 +250,13 @@ public class Symbol
 
 	this.pins = Pin.Add(this.pins,p);
     }
+    public Pin getPin(int num){
+	final int seq = (num-1);
+	if (-1 < seq && seq < this.count())
+	    return this.pins[seq];
+	else
+	    throw new IllegalArgumentException(String.valueOf(num));
+    }
     public boolean layout(){
 	if (null != this.pins){
 	    java.util.Arrays.sort(this.pins);
@@ -343,6 +350,8 @@ public class Symbol
 		throw new IllegalStateException("Missing layout");
 	}
 	else if (null != this.path)
+	    return false;
+	else if (null != this.children)
 	    return false;
 	else
 	    throw new IllegalStateException("Missing pins or path");
@@ -460,6 +469,8 @@ public class Symbol
 
 	    return true;
 	}
+	else if (null != this.children)
+	    return true;
 	else
 	    return false;
     }

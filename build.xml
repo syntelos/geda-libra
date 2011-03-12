@@ -87,6 +87,8 @@
     <java jar="sch.jar" fork="true">
       <arg value="-l" />
       <arg value="test/sym/src" />
+      <arg value="-n" />
+      <arg value="test/sym/dst" />
       <arg value="-i" />
       <arg value="test/sch/src" />
       <arg value="-s" />

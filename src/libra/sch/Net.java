@@ -1,19 +1,75 @@
 package libra.sch;
 
-public class Net {
+import libra.Attribute;
+import libra.Layout;
+import libra.Lib;
+import libra.Pin;
+import libra.Symbol;
+
+import java.io.IOException;
+
+/**
+ * A net has a lib symbol and a schematic component use of that
+ * symbol.
+ */
+public class Net
+    extends Component
+{
 
     public final int pin;
 
-    public final String signal;
+    public final String basename, netname;
 
-    public Net(String[] line){
-	super();
 
-	this.pin = Integer.parseInt(line[1]);
-	this.signal = line[2];
+
+    public Net(Symbol target, String[] line)
+	throws IOException
+    {
+	this(target,Integer.parseInt(line[1]),line[2]);
+    }
+    private Net(Symbol targetSymbol, int pin, String signal)
+	throws IOException
+    {
+	super(SymName(signal));
+	this.pin = pin;
+	this.basename = BaseName(signal);
+	this.netname = NetName(signal);
+	if (null == this.symbol){
+	    Pin targetPin = targetSymbol.getPin(this.pin);
+	    this.symbol = new Symbol("P 200 0 200 200 1 0 0");
+	    this.symbol.add(Attribute.Type.T).text("pinseq",0).loc(this.symbol);
+	    this.symbol.add(Attribute.Type.T).text("pintype",targetPin.getType()).loc(this.symbol);
+	    this.symbol.add(Attribute.Type.T).text("pinnumber",1).loc(this.symbol);
+	    this.symbol.add(Attribute.Type.T).text("pinlabel",this.basename).loc(this.symbol);
+	    Attribute underbar = this.symbol.add(Attribute.Type.L).line(50, 200, 350, 200, 3);
+	    Attribute label = this.symbol.add(Attribute.Type.T).text(null,this.basename,9,8,1).show(Attribute.Show.Value).rel(underbar,25,50);
+	    this.symbol.add(Attribute.Type.T).text("net",this.netname,8,10,0).loc(label);
+	    this.symbol.write(Lib.Net(this.name));
+	}
     }
 
 
+    public final static String NetName(String string){
+	int idx = string.indexOf(':');
+	if (0 < idx)
+	    return string;
+	else
+	    return string+":1";
+    }
+    public final static String BaseName(String string){
+	int idx = string.indexOf(':');
+	if (0 < idx)
+	    return string.substring(0,idx);
+	else
+	    return string;
+    }
+    public final static String SymName(String string){
+	int idx = string.indexOf(':');
+	if (0 < idx)
+	    return string.replace(':','-');
+	else
+	    return string+"-1";
+    }
     public final static Net[] Add(Net[] list, Net item){
 	if (null == item)
 	    return list;

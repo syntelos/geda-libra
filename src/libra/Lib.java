@@ -13,22 +13,37 @@ public class Lib
     extends libra.io.FileIO
 {
 
-    private static File Directory = new File("lib");
+    private static File Sources = new File("lib");
 
-    public final static boolean Define(File dir){
+    private static File Targets = Sources;
+
+
+    public final static boolean Sources(File dir){
 
 	if (dir.isDirectory()){
-	    Directory = dir;
+	    Sources = dir;
 	    return true;
 	}
 	else
 	    return false;
     }
-    public final static File Directory(){
-	return Directory;
+    public final static boolean Targets(File dir){
+
+	if (dir.isDirectory()){
+	    Targets = dir;
+	    return true;
+	}
+	else
+	    return false;
+    }
+    public final static File Sources(){
+	return Sources;
+    }
+    public final static File Targets(){
+	return Targets;
     }
     public final static boolean Found(){
-	return Directory.isDirectory();
+	return (Sources.isDirectory() || Targets.isDirectory());
     }
 
 
@@ -39,28 +54,64 @@ public class Lib
 
 	Symbol sym = Map.get(name);
 	if (null == sym){
-	    File symf = new File(Directory,name+".csv");
-	    try {
-		sym = new Symbol(symf);
+	    File symf = Lib.Sym(name);
+	    if (symf.isFile()){
+		/*
+		 * Components with tabular sources
+		 */
+		try {
+		    sym = new Symbol(symf);
 
-		if (null == sym.part)
-		    sym.part = name;
+		    if (null == sym.part)
+			sym.part = name;
 
-		if (sym.layout()){
-		    if (sym.markup())
+		    if (sym.layout()){
+			if (sym.markup())
+			    Map.put(name,sym);
+			else
+			    throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
+		    }
+		    else if (sym.markup())
 			Map.put(name,sym);
 		    else
 			throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
 		}
-		else if (sym.markup())
-		    Map.put(name,sym);
-		else
-		    throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
+		catch (java.io.IOException iox){
+		    throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+		}
 	    }
-	    catch (java.io.IOException iox){
-		throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+	    else {
+		/*
+		 * Nets without tabular sources
+		 */
+		symf = Lib.Net(name);
+		if (symf.isFile()){
+		    try {
+			sym = new Symbol(symf);
+
+			if (null == sym.part)
+			    sym.part = name;
+
+			Map.put(name,sym);
+		    }
+		    catch (java.io.IOException iox){
+			throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+		    }
+		}
 	    }
 	}
 	return sym;
+    }
+    /**
+     * @return File for components with tabular sources
+     */
+    public final static File Sym(String name){
+	return (new File(Sources,name+".csv"));
+    }
+    /**
+     * @return File for nets without tabular sources
+     */
+    public final static File Net(String name){
+	return (new File(Targets,name+".sym"));
     }
 }
