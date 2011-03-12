@@ -55,13 +55,17 @@ public class Component
 
 	this.nets = Net.Add(this.nets,n);
     }
-    public void layout(Component prev, Layout.Cursor cursor){
+    public void layout1(Component prev, Layout.Cursor cursor){
 
-	this.layout = cursor.layout(prev,this);
+	this.layout = cursor.layout1(prev,this);
+
+	System.err.printf("L1 %s %s\n",this.name,this.rectString());
     }
-    public void finish(Component prev, Layout.Cursor cursor){
+    public void layout3(Component prev, Layout.Cursor cursor){
 
-	cursor.finish(prev,this);
+	cursor.layout3(prev,this);
+
+	System.err.printf("L3 %s %s\n",this.name,this.rectString());
     }
     public boolean isLayoutHorizontal(){
 	if (null != this.layout)

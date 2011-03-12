@@ -74,7 +74,7 @@ public class Layout {
 		this.dir = Direction.Horizontal;
 	    return this;
 	}
-	public Layout.Cursor.Relation layout(libra.sch.Component prev, libra.sch.Component next){
+	public Layout.Cursor.Relation layout1(libra.sch.Component prev, libra.sch.Component next){
 
 	    switch(this.dir){
 	    case Horizontal:
@@ -116,28 +116,37 @@ public class Layout {
 		throw new Error(this.dir.name());
 	    }
 	}
-	public Cursor finish(int sw, int sh){
-	    this.x = X0;
-	    this.y = Y0;
+	public Cursor layout2(int sw, int sh){
 
-	    this.dx = Math.max(0,((sw - D2)/ (this.countW)));
-	    this.dy = Math.max(0,((sh - D2)/ (this.countH)));
+
+	    this.dx = (Math.max(0,((sw - D0)/ this.countW)))>>1;
+	    this.dy = (Math.max(0,((sh - D0)/ this.countH)))>>1;
+
+	    this.x = this.dx;
+	    this.y = this.dy;
 
 	    this.dir = Direction.Horizontal;
 
 	    this.countX = 0;
 	    this.countY = 0;
+
+	    System.err.printf("L2 sw=%4d sh=%4d dx=%4d dy=%4d%n",sw,sh,this.dx,this.dy);
+
 	    return this;
 	}
-	public void finish(libra.sch.Component prev, libra.sch.Component next){
+	public void layout3(libra.sch.Component prev, libra.sch.Component next){
+
+	    System.err.printf("L3 %s dx=%4d dy=%4d%n",next.name,this.x,this.y);
+	    next.dxy1( this.x, this.y);
+
 	    if (next.isLayoutHorizontal()){
-		this.countX += 1;
-		this.countY = 1;
+
+		this.x += this.dx;
+		this.y = this.dy;
 	    }
 	    else {
-		this.countY += 1;
+		this.y += this.dy;
 	    }
-	    next.dxy1( (this.countX * this.dx), Math.max(0,((this.countY * this.dy)-(next.height>>1))));
 	}
     }
     public enum Position {

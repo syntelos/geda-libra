@@ -28,6 +28,7 @@ public class Rectangle
 	extends javax.swing.JFrame
     {
 	private Rectangle[] list;
+	private java.awt.Color[] colors;
 
 
 	public Plot(){
@@ -86,8 +87,27 @@ public class Rectangle
 		    copier[len] = item;
 		    this.list = copier;
 		}
+		{
+		    final int len = this.list.length;
+		    java.awt.Color[] copier = new java.awt.Color[len];
+		    if (null == this.colors)
+			this.colors = copier;
+		    else {
+			System.arraycopy(this.colors,0,copier,0,this.colors.length);
+			this.colors = copier;
+		    }
+		}
 		this.repaint();
 	    }
+	}
+	/**
+	 * Define a color for the previous "add(Rectangle)"
+	 */
+	public void set(java.awt.Color color){
+	    this.colors[this.colors.length-1] = color;
+	}
+	public void set(String color){
+	    this.set(java.awt.Color.decode(color));
 	}
 	@Override
 	public void paint(java.awt.Graphics g) {
@@ -123,7 +143,16 @@ public class Rectangle
 
 		g.setTransform(xform);
 
-		for (Rectangle item: this.list){
+		final int count = this.list.length;
+
+		java.awt.Color color = null;
+
+		for (int cc = 0; cc < count; cc++){
+
+		    Rectangle item = this.list[cc];
+
+		    if (null != this.colors[cc])
+			g.setColor(this.colors[cc]);
 
 		    Rectangle nitem = item.normalize();
 
@@ -366,7 +395,7 @@ public class Rectangle
 
     public enum Op {
 
-	help, intersection, union, random, show;
+	help, intersection, plot, union, random, show;
 
 	public final static Op For(String s){
 	    while (0 < s.length() && '-' == s.charAt(0))
@@ -392,9 +421,27 @@ public class Rectangle
 	System.err.println("  Commands");
 	System.err.println();
 	System.err.println("      intersection a b");
+	System.err.println();
+	System.err.println("              Perform the intersection of 'a' and 'b' using this class.");
+	System.err.println();
+	System.err.println("      plot a*");
+	System.err.println();
+	System.err.println("              Graphically display zero or more following rectangles.  Any");
+	System.err.println("              subsequent commands also will be displayed. ");
+	System.err.println();
 	System.err.println("      union a b");
+	System.err.println();
+	System.err.println("              ");
+	System.err.println();
 	System.err.println("      random [N [cmd]] ");
+	System.err.println();
+	System.err.println("              Produce N (default 10) operations (cmd default intersect).");
+	System.err.println();
 	System.err.println("      <cmd> show");
+	System.err.println();
+	System.err.println("              Optional suffix to enable the graphical display of (scaled)");
+	System.err.println("              results.   Display is implied by the use of the 'plot' ");
+	System.err.println("              operator.");
 	System.err.println();
 	System.err.println("  Argument rectangles, a & b");
 	System.err.println();
@@ -411,6 +458,9 @@ public class Rectangle
     }
     public static void main(String[] argv){
 	if (0 < argv.length){
+	    boolean show = false;
+	    Rectangle.Plot plotter = null;
+
 	    final int argc = argv.length;
 	    for (int cc = 0; cc < argc; cc++){
 		String arg = argv[cc];
@@ -419,11 +469,32 @@ public class Rectangle
 		case help:
 		    usage();
 		    break;
+		case plot:{
+		    show = true;
+		    if (null == plotter)
+			plotter = new Rectangle.Plot();
+
+		    for (cc += 1; cc < argc; cc++){
+			arg = argv[cc];
+			if (Op.help == Op.For(arg)){
+			    try {
+				plotter.add(new Rectangle(arg));
+			    }
+			    catch (RuntimeException exc){
+
+				plotter.set(arg);
+			    }
+			}
+			else {
+			    cc -= 1;
+			    break;
+			}
+		    }
+		    break;
+		}
 		case random:{
 		    final java.util.Random random = new java.util.Random();
 
-		    boolean show = false;
-		    Rectangle.Plot plotter = null;
 		    Op cmd = Op.intersection;
 		    int N = 10;
 		    cc += 1;
@@ -517,6 +588,9 @@ public class Rectangle
 			System.exit(errors);
 		    break;
 		}
+		    /*
+		     * Union & Intersection (operators having two operands)
+		     */
 		default:
 		    cc += 1;
 		    if (cc < argc){
@@ -526,8 +600,6 @@ public class Rectangle
 			    if (cc < argc){
 				Rectangle b = new Rectangle(argv[cc]);
 
-				boolean show = false;
-				Rectangle.Plot plotter = null;
 				cc += 1;
 				if (cc < argc){
 				    arg = argv[cc];

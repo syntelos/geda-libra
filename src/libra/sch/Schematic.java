@@ -263,7 +263,7 @@ public class Schematic
 
 		    cursor.small(small[cc]);
 
-		    next.layout(prev,cursor);
+		    next.layout1(prev,cursor);
 		    prev = next;
 		}
 	    }
@@ -290,7 +290,7 @@ public class Schematic
 	    final int sw = (space.width-layout.width);
 	    final int sh = (space.height-layout.height);
 
-	    cursor.finish(sw,sh);
+	    cursor.layout2(sw,sh);
 	    {
 		Component prev = null, next;
 
@@ -300,7 +300,7 @@ public class Schematic
 
 		    cursor.small(small[cc]);
 
-		    next.finish(prev,cursor);
+		    next.layout3(prev,cursor);
 		    prev = next;
 		}
 	    }
