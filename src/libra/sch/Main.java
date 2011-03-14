@@ -24,7 +24,7 @@ public class Main
     public static void Usage(){
 	System.out.println("Usage");
 	System.out.println();
-	System.out.println("    sch -p symbol+ [-t schematic.csv]");
+	System.out.println("    sch -p symbol [symbol]* [-t schematic.csv]");
 	System.out.println();
 	System.out.println("Description");
 	System.out.println();
@@ -33,10 +33,22 @@ public class Main
 	System.out.println();
 	System.out.println("    The generated table needs to be edited from multiple to");
 	System.out.println("    single signals per pin, and pin rows deleted for not");
-	System.out.println("    generating nets.");
+	System.out.println("    generating 'glue' nets.");
 	System.out.println();
 	System.out.println("    The option '-l' may be employed to identify the ");
-	System.out.println("    directory containing the named symbols.");
+	System.out.println("    directory containing the named symbol source tables.");
+	System.out.println();
+	System.out.println("    The option '-p' may reference a directory, in which case");
+	System.out.println("    all component symbols (not net symbols) found will be ");
+	System.out.println("    employed.  These component symbols must begin with an");
+	System.out.println("    attribute having type 'B', as our symbols generated from");
+	System.out.println("    tables.  Our generated nets begin with attribute type 'P'.");
+	System.out.println();
+	System.out.println("    The option '-t' may reference a directory, in which case");
+	System.out.println("    a schematic file name is generated from symbol names as ");
+	System.out.println("           {t-dir}/schematic[-symbol]+.sch");
+	System.out.println();
+	System.out.println("    The default output target, missing option '-t', is stdout.");
 	System.out.println();
 	System.out.println("  For example");
 	System.out.println();
@@ -45,7 +57,7 @@ public class Main
 	System.out.println();
 	System.out.println("Usage");
 	System.out.println();
-	System.out.println("    Sch -i schematic.csv [-s schematic.sch]");
+	System.out.println("    sch -i schematic.csv -s schematic.sch");
 	System.out.println();
 	System.out.println("Description");
 	System.out.println();
@@ -74,13 +86,12 @@ public class Main
 	System.out.println("    gEDA titles and connectors are in the gEDA home");
 	System.out.println("    directory.");
 	System.out.println();
-	System.out.println("Options");
+	System.out.println("Parameters & Options");
 	System.out.println();
-	System.out.println("    -i schematic.csv      Schematic table for generating");
+	System.out.println("    -i schematic.csv      Source schematic table for generating");
 	System.out.println("                          schematic file.");
 	System.out.println();
-	System.out.println("    -s schematic.sch      Write schematic file, default ");
-	System.out.println("                          stdout.");
+	System.out.println("    -s schematic.sch      Target schematic file.");
 	System.out.println();
 	System.out.println("    -g /usr/share/gEDA    Installation of gEDA contains ");
 	System.out.println("                          directory 'sym' and friends.");
@@ -199,12 +210,42 @@ public class Main
 		    arg = argv[cc];
 		    File p = new File(arg);
 		    if (p.isDirectory()){
+			/*
+			 * Use all components in this directory
+			 */
 			File[] plist = ListFiles(p,".sym");
 			if (null != plist){
 			    final int count = plist.length;
+			    int drop = 0;
 			    symbolNames = new String[count];
 			    for (int c = 0; c < count; c++){
-				symbolNames[c] = Lib.Basename(plist[c].getName());
+				String n = Lib.Basename(plist[c].getName());
+				Symbol s = Lib.For(n);
+				/*
+				 * Use Components but not Nets.  
+				 * 
+				 * A nice way to effect this is to
+				 * require Components to begin with an
+				 * attribute type 'B' -- permitting
+				 * Nets to employ any other attribute
+				 * type (P, or ...).
+				 */
+				if (null != s && Attribute.Type.B == s.type){
+				    symbolNames[c] = n;
+				}
+				else
+				    drop += 1;
+			    }
+			    if (0 < drop){
+				final int ncount = (count-drop);
+				String[] copier = new String[ncount];
+				for (int c = 0, k = 0; c < count; c++){
+				    String n = symbolNames[c];
+				    if (null != n){
+					copier[k++] = n;
+				    }
+				}
+				symbolNames = copier;
 			    }
 			}
 			else {
@@ -213,9 +254,13 @@ public class Main
 			}
 		    }
 		    else {
+			/*
+			 * Explicitly define components by name, using
+			 * one or more '-p name [name]+' options.
+			 */
 			arg = Lib.Basename(argv[cc]);
 			if (0 < arg.length() && '-' != arg.charAt(0)){
-			    symbolNames = new String[]{arg};
+			    symbolNames = Pin.Add(symbolNames,arg);
 			    for (int tt = (cc+1); tt < argc; tt++){
 				arg = Lib.Basename(argv[tt]);
 				if (0 < arg.length()){
@@ -264,13 +309,13 @@ public class Main
 	    if (GedaHome.Found()){
 		if (Lib.Found()){
 		    if (generateSchematicFrom.isDirectory()){
-			File dst;
-			for (File src: ListFiles(generateSchematicFrom,".csv")){
 
-			    try {
-				Schematic schematic = new Schematic(src);
+			if (null != schematicFile){
+			    File dst;
+			    for (File src: ListFiles(generateSchematicFrom,".csv")){
 
-				if (null != schematicFile){
+				try {
+				    Schematic schematic = new Schematic(src);
 
 				    if (schematicFile.isDirectory()){
 					dst = FilenameMap(src,schematicFile,"sch");
@@ -281,43 +326,44 @@ public class Main
 				    schematic.write(dst);
 
 				    System.err.printf("Wrote '%s'%n",dst);
-				}
-				else {
 
-				    schematic.write(System.out);
+				    if (schematicFile == dst)
+					System.exit(0);
 				}
-				System.exit(0);
+				catch (Exception exc){
+				    exc.printStackTrace();
+				    System.exit(1);
+				}
 			    }
-			    catch (Exception exc){
-				exc.printStackTrace();
-				System.exit(1);
-			    }
+			    System.exit(0);
+			}
+			else {
+			    System.err.println("Error, missing '-s target' argument.");
+			    System.exit(1);
 			}
 		    }
-		    else {
+		    else if (null != schematicFile){
 			try {
 			    Schematic schematic = new Schematic(generateSchematicFrom);
 
-			    if (null != schematicFile){
-
-				if (schematicFile.isDirectory()){
-				    schematicFile = FilenameMap(generateSchematicFrom,schematicFile,"sch");
-				}
-
-				schematic.write(schematicFile);
-
-				System.err.printf("Wrote '%s'%n",schematicFile);
+			    if (schematicFile.isDirectory()){
+				schematicFile = FilenameMap(generateSchematicFrom,schematicFile,"sch");
 			    }
-			    else {
 
-				schematic.write(System.out);
-			    }
+			    schematic.write(schematicFile);
+
+			    System.err.printf("Wrote '%s'%n",schematicFile);
+
 			    System.exit(0);
 			}
 			catch (Exception exc){
 			    exc.printStackTrace();
 			    System.exit(1);
 			}
+		    }
+		    else {
+			System.err.println("Error, missing '-s target' argument.");
+			System.exit(1);
 		    }
 		}
 		else {
@@ -338,10 +384,27 @@ public class Main
 	    /*
 	     */
 	    Symbol[] symbols = new Symbol[count];
+	    boolean errors = false;
 	    for (int cc = 0; cc < count; cc++){
-		symbols[cc] = Lib.For(symbolNames[cc]);
+		String n = symbolNames[cc];
+		Symbol s = Lib.For(n);
+		if (null != s)
+		    symbols[cc] = s;
+		else {
+		    String tn;
+		    if (null != generateTableTo)
+			tn = generateTableTo.getPath();
+		    else
+			tn = "<stdout>";
+
+		    errors = true;
+		    System.err.printf("Error, unable to locate symbol '%s' for generating table '%s'.%n",n,tn);
+		}
 	    }
-	    Rectangle.SortDescending(symbols);
+	    if (errors)
+		System.exit(1);
+	    else
+		Rectangle.SortDescending(symbols);
 	    /*
 	     */
 	    PrintStream out = System.out;

@@ -20,6 +20,9 @@ public class Net
 
     public final String basename, netname;
 
+    private Symbol targetSymbol;
+
+    private Pin targetPin;
 
 
     public Net(Symbol target, String[] line)
@@ -34,18 +37,55 @@ public class Net
 	this.pin = pin;
 	this.basename = BaseName(signal);
 	this.netname = NetName(signal);
-	if (null == this.symbol){
-	    Pin targetPin = targetSymbol.getPin(this.pin);
-	    this.symbol = new Symbol("P 200 0 200 200 1 0 0");
-	    this.symbol.add(Attribute.Type.T).text("pinseq",0).loc(this.symbol);
-	    this.symbol.add(Attribute.Type.T).text("pintype",targetPin.getType()).loc(this.symbol);
-	    this.symbol.add(Attribute.Type.T).text("pinnumber",1).loc(this.symbol);
-	    this.symbol.add(Attribute.Type.T).text("pinlabel",this.basename).loc(this.symbol);
-	    Attribute underbar = this.symbol.add(Attribute.Type.L).line(50, 200, 350, 200, 3);
-	    Attribute label = this.symbol.add(Attribute.Type.T).text(null,this.basename,9,8,1).show(Attribute.Show.Value).rel(underbar,25,50);
-	    this.symbol.add(Attribute.Type.T).text("net",this.netname,8,10,0).loc(label);
-	    this.symbol.write(Lib.Net(this.name));
+	this.targetSymbol = targetSymbol;
+	if (null != this.targetSymbol){
+	    this.targetPin = targetSymbol.getPin(this.pin);
+
+	    this.angle = this.targetPin.angle;
+	    this.alignment = this.targetPin.alignment;
+
+	    if (null != this.targetPin){
+
+		if (null == this.symbol){
+		    this.generateNetSymbolTo(targetSymbol);
+		}
+	    }
+	    else
+		throw new IllegalStateException(String.format("Null pin '%d' for net '%s' from target '%s'.",pin,signal,targetSymbol.part));
 	}
+	else
+	    throw new IllegalStateException(String.format("Missing target symbol for net '%s'.",signal));
+    }
+
+
+    @Override
+    public boolean markup(Attribute ap){
+	Component parent = (Component)ap;
+
+	int tx = parent.x1;
+	int ty = parent.y1;
+
+	return true;
+    }
+    public Net generateNetSymbolTo(Symbol targetSymbol)
+	throws IOException
+    {
+
+	if (null != this.symbol){
+	    this.symbol.destroy();
+	}
+
+	this.symbol = new Symbol("P 200 0 200 200 1 0 0");
+	this.symbol.add(Attribute.Type.T).text("pinseq",0).loc(this.symbol);
+	this.symbol.add(Attribute.Type.T).text("pintype",this.targetPin.getType()).loc(this.symbol);
+	this.symbol.add(Attribute.Type.T).text("pinnumber",1).loc(this.symbol);
+	this.symbol.add(Attribute.Type.T).text("pinlabel",this.basename).loc(this.symbol);
+	Attribute underbar = this.symbol.add(Attribute.Type.L).line(50, 200, 350, 200, 3);
+	Attribute label = this.symbol.add(Attribute.Type.T).text(null,this.basename,9,8,1).show(Attribute.Show.Value).layoutTextToUnderline(underbar);
+	this.symbol.add(Attribute.Type.T).text("net",this.netname,8,8,0).loc(label);
+	this.symbol.write(Lib.Net(this.name));
+
+	return this;
     }
 
 

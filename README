@@ -16,15 +16,24 @@ driven project.
 
 TODO
 
+    sym
+
+        Fix new bug for symbol layout from pin label widths.  See
+        test/sym/dst/ADXL345.sym.
+
+    general
+
+        Merge attribute subclass children of symbol and schematic into
+        the attribute children list for uniformity under producer and
+        consumer modes.
+
     sch
+
+        Layout and markup "glue" nets.
 
         Fix pin iteration, see test/schematic..sch
 
-        Fix layout "finish stage" for clearance within layout space.
-
         Differentiate symbols on having pins or not.  Symbols without pins are logo/graphics.
-
-        Place nets: typed, oriented, and positioned for their respective pins.
 
         Read an existing file and preserve "extra" information.
 

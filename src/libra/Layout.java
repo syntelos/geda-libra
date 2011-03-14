@@ -562,20 +562,22 @@ public class Layout {
      */
     public static class Dimension {
 
-	public final static int U = 100, X0 = 3*U, Y0 = 3*U, PinSep = 4*U, Char = 125;
+	public final static int U = 100, X0 = 3*U, Y0 = 3*U, PinSep = 4*U;
 
 	public final static int Pins(int c){
 	    return PinSep+(PinSep*c);
 	}
 	public final static int Label(String s){
 	    if (null != s)
-		return Label(s.length());
+		return LayoutFont.Instance.width(s);
 	    else
-		return Label(0);
+		return 0;
 	}
+	/*
 	public final static int Label(int slen){
-	    return (Char * slen);
+	    return (LayoutFont.Instance.em() * slen);
 	}
+	*/
 	public final static int Delta(int delta){
 
 	    if (U < delta){

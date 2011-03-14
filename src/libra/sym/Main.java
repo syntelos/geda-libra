@@ -157,12 +157,12 @@ public class Main
 	if (null != inf){
 	    try {
 		if (inf.isDirectory()){
-		    File dst;
-		    for (File src : ListFiles(inf,".csv")){
 
-			Symbol symbol = new Symbol(src);
+		    if (null != sf){		    
+			File dst;
+			for (File src : ListFiles(inf,".csv")){
 
-			if (null != sf){
+			    Symbol symbol = new Symbol(src);
 
 			    if (sf.isDirectory()){
 				dst = FilenameMap(src,sf,"sym");
@@ -173,11 +173,14 @@ public class Main
 			    symbol.write(dst);
 
 			    System.err.printf("Wrote '%s'%n",dst);
-			}
-			else {
 
-			    symbol.write(System.out);
+			    if (dst == sf)
+				System.exit(0);
 			}
+		    }
+		    else {
+			System.err.println("Error, missing '-s target' argument.");
+			System.exit(1);
 		    }
 		}
 		else {
@@ -195,7 +198,8 @@ public class Main
 		    }
 		    else {
 
-			symbol.write(System.out);
+			System.err.println("Error, missing '-s target' argument.");
+			System.exit(1);
 		    }
 		}
 		System.exit(0);

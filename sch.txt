@@ -1,22 +1,24 @@
 
 Overview
 
-    This tool will generate or edit a gEDA GSCHEM schematic from a
-    Schematic Table, adding net connectors to component pins.
+    This tool is planned to generate and edit a gEDA GSCHEM schematic
+    from a Schematic Table -- connecting nets to components according
+    to the table specification.
 
-    The editing process is derived from the generation process,
-    permitting the preservation of unique information.  
+    An editing process will be derived from the generation process,
+    eventually permitting the preservation of unique information added
+    to a generated schematic.
 
-    This tool works in terms of net connectors attached to component
-    pins.  Therefore in editing the tool will drop net connectors not
-    described in the Schematic Table.
+    The editing process will drop nets not defined in the Schematic
+    Table.
 
 
 Schematic Table
 
-    The process is driven by a CSV file named '<Schematic>.csv'.
+    The generation and editing processes are driven by a Schematic
+    Table CSV file.
 
-    The CSV file starts with a Meta Data segment, followed by a Table
+    The CSV file begins with a Meta Data segment, followed by a Table
     Headline and then Table Data.
 
     Comment rows begin with '#'.
@@ -73,18 +75,6 @@ Invocation
 
         java -jar sch.jar -i schematic.csv -s schematic.sch
 
-Installation
+    See also
 
-     Installed title blocks are found in
-
-        {GEDA_HOME}/sym/titleblock
-
-     where GEDA_HOME is one of
-
-        /usr/share/gEDA
-
-     or
-        /usr/local/share/gEDA 
-
-     or identified by an environment variable named GEDA_HOME, or
-     passed on the command line.
+        java -jar sch.jar -help

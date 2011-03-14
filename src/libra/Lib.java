@@ -66,18 +66,18 @@ public class Lib
 			sym.part = name;
 
 		    if (sym.layout()){
-			if (sym.markup())
+			if (sym.markup(null))
 			    Map.put(name,sym);
 			else
 			    throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
 		    }
-		    else if (sym.markup())
+		    else if (sym.markup(null))
 			Map.put(name,sym);
 		    else
 			throw new IllegalArgumentException(String.format("Bad symbol layout '%s'",name));
 		}
 		catch (java.io.IOException iox){
-		    throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+		    throw new IllegalArgumentException(String.format("Error reading symbol '%s'",name),iox);
 		}
 	    }
 	    else {
@@ -95,7 +95,7 @@ public class Lib
 			Map.put(name,sym);
 		    }
 		    catch (java.io.IOException iox){
-			throw new IllegalArgumentException(String.format("Symbol not found '%s'",name),iox);
+			throw new IllegalArgumentException(String.format("Error reading symbol '%s'",name),iox);
 		    }
 		}
 	    }
@@ -106,12 +106,12 @@ public class Lib
      * @return File for components with tabular sources
      */
     public final static File Sym(String name){
-	return (new File(Sources,name+".csv"));
+	return (new File(Sources,name.replace('\\','%')+".csv"));
     }
     /**
      * @return File for nets without tabular sources
      */
     public final static File Net(String name){
-	return (new File(Targets,name+".sym"));
+	return (new File(Targets,name.replace('\\','%')+".sym"));
     }
 }

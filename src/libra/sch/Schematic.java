@@ -96,35 +96,25 @@ public class Schematic
     public void write(File sym)
 	throws IOException
     {
-	OutputStream out = null;
-	try {
-	    out = this.write(new FileOutputStream(sym));
-	}
-	finally {
-	    if (null != out)
-		out.close();
-	}
-    }
-    public OutputStream write(OutputStream sym)
-	throws IOException
-    {
-	return this.write(new PrintStream(sym));
-    }
-    public PrintStream write(PrintStream out)
-	throws IOException
-    {
-
 	if (this.layout()){
 
-	    if (this.markup()){
+	    if (this.markup(null)){
 
-		out.println(this);
+		PrintStream out = new PrintStream(new FileOutputStream(sym));
+		try {
+		    out.printf("v %s %s%n",Vdate,Vnumber);
 
-		for (Component component: this.components){
+		    out.println(this);
 
-		    out.println(component);
+		    for (Component component: this.components){
+
+			out.println(component);
+		    }
+		    return;
 		}
-		return out;
+		finally {
+		    out.close();
+		}
 	    }
 	    else
 		throw new IllegalStateException("Missing markup.");
@@ -311,8 +301,17 @@ public class Schematic
 	else
 	    return false;
     }
-    public boolean markup(){
-	return true;
+    @Override
+    public boolean markup(Attribute parent){
+
+	boolean re = true;
+
+	for (Component component: this.components){
+
+	    if (!component.markup(this))
+		re = false;
+	}
+	return re;
     }
     public java.lang.Iterable<Attribute> components(){
 	return this.iterator(Attribute.Type.C);

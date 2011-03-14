@@ -215,6 +215,14 @@ public class Attribute
     }
 
 
+    public void destroy(){
+    }
+    /**
+     * @return Status OK, else Status ERROR (do not write)
+     */
+    public boolean markup(Attribute parent){
+	return true;
+    }
     public Rectangle getBounds(){
 	Rectangle bounds = this.bounds;
 	if (null == bounds){
@@ -384,13 +392,13 @@ public class Attribute
 
 	    switch(this.show){
 	    case NameValue:
-		return Layout.Dimension.Label((this.name.length()+this.value.toString().length()+1));
+		return Layout.Dimension.Label(this.name+'='+this.value.toString());
 
 	    case Value:
-		return Layout.Dimension.Label(this.value.toString().length());
+		return Layout.Dimension.Label(this.value.toString());
 
 	    case Name:
-		return Layout.Dimension.Label(this.name.length());
+		return Layout.Dimension.Label(this.name);
 
 	    default:
 		throw new Error(this.show.name());
@@ -458,6 +466,41 @@ public class Attribute
 	    this.y2 = (this.y1 + this.height);
 	}
 	return this.attachChildren();
+    }
+    public Attribute layoutTextToUnderline(Attribute underline){
+
+	this.x1 = underline.x1;
+	this.y1 = Math.max(0,(underline.y1+50));
+
+	this.layoutText();
+
+	switch(this.angle){
+	case 0:
+	    switch(this.alignment){
+	    case 0:
+
+		this.dx1( (underline.width-this.width)>>1);
+
+		break;
+	    default:
+		throw new IllegalStateException(String.format("Unimplemented case alignment %d",this.alignment));
+	    }
+	    break;
+	case 90:
+	    switch(this.alignment){
+	    case 0:
+
+		this.dy1( (underline.height-this.height)>>1);
+
+		break;
+	    default:
+		throw new IllegalStateException(String.format("Unimplemented case alignment %d",this.alignment));
+	    }
+	    break;
+	default:
+	    throw new IllegalStateException(String.format("Unimplemented case angle %d",this.angle));
+	}
+	return this;
     }
     public Attribute text(String name, String value, int color, int size, int visibility){
 	return this.text(name,value,Color.For(color),size,visibility);
@@ -579,6 +622,11 @@ public class Attribute
 	this.x2 = x2;
 	this.y2 = y2;
 	this.color = c;
+	/*
+	 * Compatible with superclass Rectangle
+	 */
+	this.width = (this.x2 - this.x1);
+	this.height = (this.y2 - this.y1);
 	return this;
     }
     public String text(){
@@ -661,41 +709,46 @@ public class Attribute
 	else if (Type.H == this.type)
 	    return (null == this.value || 1 < this.num_lines);
 	else
-	    return (0 < this.num_lines);
+	    return false;
     }
     public Attribute add(String text){
-	switch(this.type){
-	case T:
-	    StringTokenizer strtok = new StringTokenizer(text,"=");
-	    if (2 == strtok.countTokens()){
-		this.name = strtok.nextToken();
-		this.value = strtok.nextToken();
-		return this;
-	    }
-	    else {
-		switch(this.show){
-		case NameValue:
-		    throw new IllegalStateException(String.format("Missing 'name=value' syntax in type 'T' value '%s'",text));
-		case Name:
+	try {
+	    return this.add(new Attribute(text));
+	}
+	catch (RuntimeException exc){
+	    switch(this.type){
+	    case T:
+		StringTokenizer strtok = new StringTokenizer(text,"=");
+		if (2 == strtok.countTokens()){
 		    this.name = strtok.nextToken();
-		    return this;
-		case Value:
 		    this.value = strtok.nextToken();
 		    return this;
-		default:
-		    throw new Error(this.show.name());
 		}
-	    }
+		else {
+		    switch(this.show){
+		    case NameValue:
+			throw new IllegalStateException(String.format("Missing 'name=value' syntax in type 'T' value '%s'",text));
+		    case Name:
+			this.name = strtok.nextToken();
+			return this;
+		    case Value:
+			this.value = strtok.nextToken();
+			return this;
+		    default:
+			throw new Error(this.show.name());
+		    }
+		}
 
-	case H:
-	    if (null == this.value){
-		this.value = new Path(text);
-		return this;
+	    case H:
+		if (null == this.value){
+		    this.value = new Path(text);
+		    return this;
+		}
+		else
+		    throw new IllegalStateException(String.format("Adding multiple text lines to attribute type '%s'",this.type.name()));
+	    default:
+		throw new IllegalStateException(String.format("Adding lines to attribute type '%s'",this.type.name()));
 	    }
-	    else
-		throw new IllegalStateException(String.format("Adding multiple text lines to attribute type '%s'",this.type.name()));
-	default:
-	    throw new IllegalStateException(String.format("Adding lines to attribute type '%s'",this.type.name()));
 	}
     }
     public Rectangle wh(boolean init){
@@ -988,14 +1041,17 @@ public class Attribute
 	if (null == list)
 	    return null;
 	else {
+	    boolean ats = true;
 	    Attribute[] attributes = null, nattributes = null;
 	    final int len = list.length;
 	    for (int cc = 0; cc < len; cc++){
 		Attribute at = list[cc];
-		if (Attribute.Type.T == at.type)
+		if (ats && Attribute.Type.T == at.type)
 		    attributes = Attribute.Add(attributes,at);
-		else
+		else {
+		    ats = false;
 		    nattributes = Attribute.Add(nattributes,at);
+		}
 	    }
 	    return new Attribute[][]{
 		attributes,

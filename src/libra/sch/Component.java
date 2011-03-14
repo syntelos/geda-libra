@@ -19,8 +19,6 @@ public class Component
 
     protected Symbol symbol;
 
-    private Net[] nets;
-
     public Layout.Cursor.Relation layout;
 
 
@@ -55,10 +53,6 @@ public class Component
 	else
 	    return false;
     }
-    public void add(Net n){
-
-	this.nets = Net.Add(this.nets,n);
-    }
     public void layout1(Component prev, Layout.Cursor cursor){
 
 	this.layout = cursor.layout1(prev,this);
@@ -71,6 +65,16 @@ public class Component
 
 	System.err.printf("L3 %s %s\n",this.name,this.rectString());
     }
+    @Override
+    public boolean markup(Attribute parent){
+	boolean re = true;
+	for (Attribute net: this){
+
+	    if (!net.markup(this))
+		re = false;
+	}
+	return re;
+    }
     public boolean isLayoutHorizontal(){
 	if (null != this.layout)
 	    return this.layout.isHorizontal();
@@ -82,9 +86,6 @@ public class Component
 	    return this.layout.isVertical();
 	else
 	    return false;
-    }
-    public java.lang.Iterable<Net> nets(){
-	return new Net.Iterable(this.nets);
     }
 
 

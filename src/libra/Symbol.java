@@ -112,48 +112,42 @@ public class Symbol
     public void write(File sym)
 	throws IOException
     {
-	OutputStream out = null;
-	try {
-	    out = this.write(new FileOutputStream(sym));
-	}
-	finally {
-	    if (null != out)
-		out.close();
-	}
-    }
-    public OutputStream write(OutputStream sym)
-	throws IOException
-    {
-	return this.write(new PrintStream(sym));
-    }
-    public PrintStream write(PrintStream out)
-	throws IOException
-    {
-
 	if (this.layout()){
 
-	    if (this.markup()){
+	    if (this.markup(null)){
 
-		out.printf("v %s %s%n",Vdate,Vnumber);
+		PrintStream out = new PrintStream(new FileOutputStream(sym));
+		try {
+		    out.printf("v %s %s%n",Vdate,Vnumber);
 
-		out.println(this);
+		    out.println(this);
 
-		for (Pin pin: this.pins){
+		    for (Pin pin: this.pins){
 
-		    out.println(pin);
+			out.println(pin);
+		    }
+		    return;
 		}
-		return out;
+		finally {
+		    out.close();
+		}
 	    }
 	    else
 		throw new IllegalStateException("Missing layout.");
 	}
-	else if (this.markup()){
+	else if (this.markup(null)){
 
-	    out.printf("v %s %s%n",Vdate,Vnumber);
+	    PrintStream out = new PrintStream(new FileOutputStream(sym));
+	    try {
+		out.printf("v %s %s%n",Vdate,Vnumber);
 
-	    out.println(this);
+		out.println(this);
 
-	    return out;
+		return;
+	    }
+	    finally {
+		out.close();
+	    }
 	}
 	else
 	    throw new IllegalStateException("Missing layout.");
@@ -411,7 +405,8 @@ public class Symbol
 	    }
 	}
     }
-    public boolean markup(){
+    @Override
+    public boolean markup(Attribute parent){
 
 	if (null != this.pins){
 	    java.util.Arrays.sort(this.pins);

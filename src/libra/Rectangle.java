@@ -272,10 +272,14 @@ public class Rectangle
     }
     public Rectangle dx1(int dx1){
 	this.x1 += dx1;
+	if (0 > this.x1)
+	    this.x1 = 0;
 	return this.wh(false);
     }
     public Rectangle dy1(int dy1){
 	this.y1 += dy1;
+	if (0 > this.y1)
+	    this.y1 = 0;
 	return this.wh(false);
     }
     public Rectangle dx2(int dx2){
@@ -728,12 +732,12 @@ public class Rectangle
     }
 
     public final static void SortAscending(Rectangle[] list){
-
-	java.util.Arrays.sort(list,Comparator.ASC);
+	if (null != list)
+	    java.util.Arrays.sort(list,Comparator.ASC);
     }
     public final static void SortDescending(Rectangle[] list){
-
-	java.util.Arrays.sort(list,Comparator.DSC);
+	if (null != list)
+	    java.util.Arrays.sort(list,Comparator.DSC);
     }
     /**
      * 
