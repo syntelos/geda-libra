@@ -119,8 +119,8 @@ public class Layout {
 	public Cursor layout2(int sw, int sh){
 
 
-	    this.dx = (Math.max(0,((sw - D0)/ this.countW)))>>1;
-	    this.dy = (Math.max(0,((sh - D0)/ this.countH)))>>1;
+	    this.dx = (Math.max(0,((sw - D0)/ this.countW)))>>2;
+	    this.dy = (Math.max(0,((sh - D0)/ this.countH)))>>2;
 
 	    this.x = this.dx;
 	    this.y = this.dy;
@@ -130,13 +130,10 @@ public class Layout {
 	    this.countX = 0;
 	    this.countY = 0;
 
-	    System.err.printf("L2 sw=%4d sh=%4d dx=%4d dy=%4d%n",sw,sh,this.dx,this.dy);
-
 	    return this;
 	}
 	public void layout3(libra.sch.Component prev, libra.sch.Component next){
 
-	    System.err.printf("L3 %s dx=%4d dy=%4d%n",next.name,this.x,this.y);
 	    next.dxy1( this.x, this.y);
 
 	    if (next.isLayoutHorizontal()){
@@ -258,6 +255,8 @@ public class Layout {
 		    case R:
 			inR = Math.max( p.layout0(), inR);
 			break;
+		    default:
+			throw new Error(lp.name());
 		    }
 		}
 
@@ -569,7 +568,7 @@ public class Layout {
 	}
 	public final static int Label(String s){
 	    if (null != s)
-		return LayoutFont.Instance.width(s);
+		return LayoutFont.Instance().width(s);
 	    else
 		return 0;
 	}

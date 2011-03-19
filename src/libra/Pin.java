@@ -202,13 +202,65 @@ public class Pin
 	return (Type.pas != this.getType());
     }
     public Layout.Position getPosition(Layout layout){
-	if (null == this.posit)
-	    this.posit = layout.getPosition(this);
-	return this.posit;
+	if (null == layout)
+	    return this.getPosition();
+	else {
+	    if (null == this.posit)
+		this.posit = layout.getPosition(this);
+	    return this.posit;
+	}
     }
     public Layout.Position getPosition(){
-	if (null == this.posit)
-	    throw new IllegalStateException("undefined");
+	if (null == this.posit){
+	    switch(this.whichend){
+	    case 0:
+		if (this.x1 == this.x2){
+
+		    if (this.y1 > this.y2)
+			return Layout.Position.B;
+		    else if (this.y1 == this.y2)
+			throw new IllegalStateException("Bad pin coordinates not line.");
+		    else
+			return Layout.Position.T;
+		}
+		else if (this.y1 == this.y2){
+
+		    if (this.x1 > this.x2)
+			return Layout.Position.L;
+		    else if (this.x1 == this.x2)
+			throw new IllegalStateException("Bad pin coordinates not line.");
+		    else
+			return Layout.Position.R;
+		}
+		else
+		    throw new IllegalStateException("Bad pin coordinates not horizontal or vertical.");
+
+	    case 1:
+		if (this.x1 == this.x2){
+
+		    if (this.y1 > this.y2)
+			return Layout.Position.T;
+		    else if (this.y1 == this.y2)
+			throw new IllegalStateException("Bad pin coordinates not line.");
+		    else
+			return Layout.Position.B;
+		}
+		else if (this.y1 == this.y2){
+
+		    if (this.x1 > this.x2)
+			return Layout.Position.R;
+		    else if (this.x1 == this.x2)
+			throw new IllegalStateException("Bad pin coordinates not line.");
+		    else
+			return Layout.Position.L;
+		}
+		else
+		    throw new IllegalStateException("Bad pin coordinates not horizontal or vertical.");
+
+	    default:
+		throw new IllegalStateException(String.format("Bad value for pin.whichend (%d)",this.whichend));
+	    }
+	}
 	else
 	    return this.posit;
     }

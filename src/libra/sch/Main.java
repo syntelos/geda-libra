@@ -125,6 +125,10 @@ public class Main
 	System.out.println();
 	System.out.println("    Only accepts one lib dir.");
 	System.out.println();
+	System.out.println("  Edit");
+	System.out.println();
+	System.out.println("    Only operates in generation mode, overwriting all existing.");
+	System.out.println();
 	System.exit(1);
     }
     public enum Opt {

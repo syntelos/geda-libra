@@ -106,4 +106,12 @@
 
   </target>
 
+  <target name="doc" description="Generate help text files">
+
+    <java jar="sch.jar" output="sch.txt" fork="true" />
+
+    <java jar="sym.jar" output="sym.txt" fork="true" />
+
+  </target>
+
 </project>

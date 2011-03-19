@@ -18,22 +18,20 @@ TODO
 
     sym
 
-        Fix new bug for symbol layout from pin label widths.  See
-        test/sym/dst/ADXL345.sym.
+        Employ path for symbol shape.
 
     general
 
-        Merge attribute subclass children of symbol and schematic into
-        the attribute children list for uniformity under producer and
-        consumer modes.
+        Currently the defined work flow is always from tables because
+        classes like Pin and Symbol have been implemented with
+        independent producer and consumer modes or methods of
+        operation.  This situation is far from ideal for a tool set.
+        The repair involves merging attribute subclass children of
+        Symbol (Pin) and Schematic (Component) into the Attribute
+        "children" list for uniformity under producer and consumer
+        modes of operation.
 
     sch
-
-        Layout and markup "glue" nets.
-
-        Fix pin iteration, see test/schematic..sch
-
-        Differentiate symbols on having pins or not.  Symbols without pins are logo/graphics.
 
         Read an existing file and preserve "extra" information.
 

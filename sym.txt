@@ -1,6 +1,6 @@
 Usage
 
-    Sym -i symbol.csv [options]
+    sym -i symbol.csv [options]
 
 Description
 
@@ -74,6 +74,11 @@ Options
                     full metadata in expanded CSV format.
 
 Bugs
+
+  Path
+
+    Handled as a logo graphic, but not yet as a part outline
+    with pin layout on a path.
 
   License
 

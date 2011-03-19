@@ -106,12 +106,20 @@ public class Lib
      * @return File for components with tabular sources
      */
     public final static File Sym(String name){
-	return (new File(Sources,name.replace('\\','%')+".csv"));
+	return (new File(Sources,CsvFileName(name)));
     }
     /**
      * @return File for nets without tabular sources
      */
     public final static File Net(String name){
-	return (new File(Targets,name.replace('\\','%')+".sym"));
+	return (new File(Targets,SymFileName(name)));
+    }
+    public final static String CsvFileName(String name){
+
+	return (name.replace('\\','%')+".csv");
+    }
+    public final static String SymFileName(String name){
+
+	return (name.replace('\\','%')+".sym");
     }
 }

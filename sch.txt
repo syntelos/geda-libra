@@ -1,80 +1,107 @@
+Usage
 
-Overview
+    sch -p symbol [symbol]* [-t schematic.csv]
 
-    This tool is planned to generate and edit a gEDA GSCHEM schematic
-    from a Schematic Table -- connecting nets to components according
-    to the table specification.
+Description
 
-    An editing process will be derived from the generation process,
-    eventually permitting the preservation of unique information added
-    to a generated schematic.
+    Conglomerate a schematic description table from the
+    symbols named as arguments to option '-p'.  
 
-    The editing process will drop nets not defined in the Schematic
-    Table.
+    The generated table needs to be edited from multiple to
+    single signals per pin, and pin rows deleted for not
+    generating 'glue' nets.
 
+    The option '-l' may be employed to identify the 
+    directory containing the named symbol source tables.
 
-Schematic Table
+    The option '-p' may reference a directory, in which case
+    all component symbols (not net symbols) found will be 
+    employed.  These component symbols must begin with an
+    attribute having type 'B', as our symbols generated from
+    tables.  Our generated nets begin with attribute type 'P'.
 
-    The generation and editing processes are driven by a Schematic
-    Table CSV file.
+    The option '-t' may reference a directory, in which case
+    a schematic file name is generated from symbol names as 
+           {t-dir}/schematic[-symbol]+.sch
 
-    The CSV file begins with a Meta Data segment, followed by a Table
-    Headline and then Table Data.
+    The default output target, missing option '-t', is stdout.
 
-    Comment rows begin with '#'.
+  For example
 
-    Meta Data
+        java -jar sch.jar -p ADXL345 HMC5834 -l test/sym/src \
+           -t test/sch/dst/schematic-0.csv
 
-        The following Meta Data fields may be inserted before the
-        Table Headline.  
+Usage
 
-            Title
-            Author
-            Logo
-            Size
+    sch -i schematic.csv -s schematic.sch
 
-        These are rows inserted before the Table headline with these
-        names in the first column and corresponding values in the
-        second column of the CSV file.
+Description
 
-        The "Logo" is a gEDA/GSCHEM symbol inserted to the right of
-        the title near the right margin.  The value is the basic file
-        name with dot "sym" extension, but not including any path
-        information.
+    Generate a gEDA schematic from a schematic description table.
 
-        The "Size" is a letter 'A' - 'Z' identifying an installed
-        title block.
+  Input table
 
-    Table Headline
+    The input argument is a CSV file, for example
+    in the following.
 
-        The column naming is generally as follows.
+        Title,Libra Control
+        Author,John Pritchard <jdp@ulsf.net>
+        Logo,logo.sym
+        Size,D
+        Component,Pin,Signal
+        ADXL345, 7,SPI_CS_ADXL345
+        ADXL345,12,SPI_SDIO
+        ADXL345,13,SPI_SDA
+        ADXL345,14,SPI_CLK
 
-            Component,Pin,Signal
+  Symbol libraries
 
-        A Table Headline is not required.  One headline is permitted
-        (and recommended), and is recognized as not Meta Data and
-        before Table Data.
+    The named components have symbol tables in the lib
+    directory.
 
-        Additional columns are permitted.  They will be ignored by the
-        tool.  
+    gEDA titles and connectors are in the gEDA home
+    directory.
 
-    Table Data
+Parameters & Options
 
-        The value of the Component column is a name.  This name is the
-        symbol file name without the trailing "dot sym" filename
-        extension.
+    -i schematic.csv      Source schematic table for generating
+                          schematic file.
 
-        The value of the Pin column is a Pin Number from within the
-        component (symbol).
+    -s schematic.sch      Target schematic file.
 
-        The value of the Signal column value is the NET Signal Name.
-        The string follows the net naming conventions from gEDA.
+    -g /usr/share/gEDA    Installation of gEDA contains 
+                          directory 'sym' and friends.
 
+                          This location defaults to
+                              /usr/share/gEDA
+                          or
+                              /usr/local/share/gEDA
+                          or may be maintained in an 
+                          environment variable named
+                              GEDA_HOME
 
-Invocation
+    -l lib                Directory containing symbol
+                          tables.  This location defaults
+                          to
+                              lib
 
-        java -jar sch.jar -i schematic.csv -s schematic.sch
+    -n lib                Directory containing net symbol
+                          files.  This location defaults
+                          to
+                              lib
 
-    See also
+  For example
 
-        java -jar sch.jar -help
+        java -jar sch.jar -i test/sch/src/schematic-0.csv \
+           -l test/sym/src -s test/sch/dst/schematic-0.sch
+
+Bugs
+
+  Lib
+
+    Only accepts one lib dir.
+
+  Edit
+
+    Only operates in generation mode, overwriting all existing.
+

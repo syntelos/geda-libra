@@ -57,13 +57,13 @@ public class Component
 
 	this.layout = cursor.layout1(prev,this);
 
-	System.err.printf("L1 %s %s\n",this.name,this.rectString());
+	///System.err.printf("L1 %s %s\n",this.name,this.rectString());
     }
     public void layout3(Component prev, Layout.Cursor cursor){
 
 	cursor.layout3(prev,this);
 
-	System.err.printf("L3 %s %s\n",this.name,this.rectString());
+	///System.err.printf("L3 %s %s\n",this.name,this.rectString());
     }
     @Override
     public boolean markup(Attribute parent){

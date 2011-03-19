@@ -34,6 +34,7 @@ public class Net
 	throws IOException
     {
 	super(SymName(signal));
+	this.componentName = Lib.SymFileName(this.name);
 	this.pin = pin;
 	this.basename = BaseName(signal);
 	this.netname = NetName(signal);
@@ -60,11 +61,55 @@ public class Net
 
     @Override
     public boolean markup(Attribute ap){
+
+	this.selectable = 1;
+
 	Component parent = (Component)ap;
 
 	int tx = parent.x1;
 	int ty = parent.y1;
 
+	int px, py;
+	{
+	    switch(this.targetPin.whichend){
+	    case 0:
+		px = this.targetPin.x1;
+		py = this.targetPin.y1;
+		break;
+	    case 1:
+		px = this.targetPin.x1;
+		py = this.targetPin.y1;
+		break;
+	    default:
+		throw new IllegalStateException(String.format("Bad value for pin.whichend (%d)",this.targetPin.whichend));
+	    }
+	}
+	Layout.Position pp = this.targetPin.getPosition();
+	switch(pp){
+	case T:
+	    this.angle = 0;
+	    this.x1 = (tx+px)-200;
+	    this.y1 = (ty+py);
+	    break;
+	case L:
+	    this.angle = 90;
+	    this.x1 = (tx+px);
+	    this.y1 = (ty+py)-200;
+	    break;
+	case B:
+	    this.angle = 180;
+	    this.x1 = (tx+px)+200;
+	    this.y1 = (ty+py);
+	    break;
+	case R:
+	    this.angle = 270;
+	    this.x1 = (tx+px);
+	    this.y1 = (ty+py)+200;
+	    break;
+	default:
+	    throw new Error(pp.name());
+	}
+	    
 	return true;
     }
     public Net generateNetSymbolTo(Symbol targetSymbol)
