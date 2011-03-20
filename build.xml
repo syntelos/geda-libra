@@ -1,27 +1,26 @@
 <?xml version="1.0"?>
-<project name="libra" default="jar">
+<project name="geda-libra" default="jar">
 
   <property name="src" location="src"/>
   <property name="lib" location="lib"/>
   <property name="bin" location="bin"/>
 
+  <property name="target.jar" value="${ant.project.name}.jar"/>
 
-  <property name="sym.target.jar" value="sym.jar"/>
-  <property name="sch.target.jar" value="sch.jar"/>
-  <property name="svg.target.jar" value="svg.jar"/>
 
-  <target name="jar">
+  <target name="jar" depends="compile">
 
-    <antcall target="compile"/>
     <delete>
       <fileset dir=".">
         <include name="*.jar"/>
       </fileset>
     </delete>
 
-    <antcall target="jar-sym"/>
-    <antcall target="jar-sch"/>
-    <antcall target="jar-svg"/>
+    <jar jarfile="${target.jar}" basedir="${bin}" manifest="${src}/Manifest.mf">
+
+      <zipfileset src="${lib}/odf.jar"/>
+
+    </jar>
 
     <delete>
       <fileset dir="${bin}">
@@ -42,30 +41,9 @@
 
   </target>
 
-  <target name="jar-sym" depends="compile">
-
-    <jar jarfile="${sym.target.jar}" basedir="${bin}" manifest="${src}/libra/sym/Manifest.mf" />
-  </target>
-
-  <target name="jar-sch" depends="compile">
-
-    <jar jarfile="${sch.target.jar}" basedir="${bin}" manifest="${src}/libra/sch/Manifest.mf" />
-  </target>
-
-  <target name="jar-svg" depends="compile">
-
-    <jar jarfile="${svg.target.jar}" basedir="${bin}" manifest="${src}/libra/svg/Manifest.mf" />
-  </target>
-
-  <target name="clean" description="Drop bin directory">
-
-    <delete dir="${bin}"/>
-
-  </target>
-
   <target name="test-sym" description="Run sym on 'test/sym/src' files">
 
-    <java jar="sym.jar" fork="true">
+    <java classname="libra.sym.Main" classpath="${target.jar}" fork="true">
       <arg value="-i" />
       <arg value="test/sym/src" />
       <arg value="-s" />
@@ -75,7 +53,7 @@
 
   <target name="test-sch" description="Run sch on 'test/sch/src' files">
 
-    <java jar="sch.jar" fork="true">
+    <java classname="libra.sch.Main" classpath="${target.jar}" fork="true">
       <arg value="-l" />
       <arg value="test/sym/src" />
       <arg value="-n" />
@@ -86,7 +64,7 @@
       <arg value="test/sch/src" />
     </java>
 
-    <java jar="sch.jar" fork="true">
+    <java classname="libra.sch.Main" classpath="${target.jar}" fork="true">
       <arg value="-l" />
       <arg value="test/sym/src" />
       <arg value="-n" />
@@ -108,9 +86,9 @@
 
   <target name="doc" description="Generate help text files">
 
-    <java jar="sch.jar" output="sch.txt" fork="true" />
+    <java output="sch.txt" classname="libra.sch.Main" classpath="${target.jar}" fork="true" />
 
-    <java jar="sym.jar" output="sym.txt" fork="true" />
+    <java output="sym.txt" classname="libra.sym.Main" classpath="${target.jar}" fork="true" />
 
   </target>
 

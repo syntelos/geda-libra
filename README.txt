@@ -2,17 +2,25 @@
 Tools for generating gEDA symbols and schematics in a spreadsheet table
 driven project.
 
-    sym
+    Available via 
 
-        Generate symbols from tables.  See sym.txt
+       java -jar geda-libra.jar
 
-    sch
+	  sym
 
-        In development, see sch.txt
+	      Generate symbols from tables.  See sym.txt
 
-    svg
+	  sch
 
-        Manipulate SVG Path "d" data for use in GSCHEM.  See svg.txt
+	      In development, see sch.txt
+
+	  svg
+
+	      Manipulate SVG Path "d" data for use in GSCHEM.  See svg.txt
+
+	  table
+
+	      In development, graphical user interface
 
 TODO
 
@@ -34,4 +42,10 @@ TODO
     sch
 
         Read an existing file and preserve "extra" information.
+
+    table
+
+        Table management
+
+        Generation processes
 
