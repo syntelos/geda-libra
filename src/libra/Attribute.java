@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
  */
 public class Attribute
     extends Rectangle
-    implements Iterable<Attribute>
+    implements libra.Iterable<Attribute>
 {
     public final static String Vdate = "20100214", Vnumber = "2";
 
@@ -32,7 +32,9 @@ public class Attribute
     public enum Type {
 	B, C, L, P, T, H, V, v;
 
-	private final static Type[] Values = Type.values();
+	public final static Type[] Values = Type.values();
+	public final static int Count = Type.Values.length;
+
 	public final static Type For(int ordinal){
 	    return Values[ordinal];
 	}
@@ -93,6 +95,8 @@ public class Attribute
     public Attribute[] children;
 
     protected Rectangle bounds;
+
+    private libra.Iterable<Attribute>[] lists;
 
 
     public Attribute(Type t){
@@ -387,7 +391,7 @@ public class Attribute
     /**
      * @return Geometric dimension of text string defined by show.
      */
-    public int length(){
+    public int labelLength(){
 	if (Attribute.Type.T == this.type){
 
 	    switch(this.show){
@@ -409,7 +413,7 @@ public class Attribute
     }
     public Attribute center(int cx, int cy){
 
-	this.width = this.length();
+	this.width = this.labelLength();
 	this.height = 50;
 
 	final int dx = (this.width>>1), dy = 50; 
@@ -425,7 +429,7 @@ public class Attribute
      * superclass.  Also define corresponding (x2,y2).
      */
     public Attribute layoutText(){
-	int length = this.length();
+	int length = this.labelLength();
 	if (0 < length){
 	    switch(this.angle){
 	    case 0:
@@ -664,9 +668,6 @@ public class Attribute
 	}
 	return this;
     }
-    public void clear(){
-	this.children = null;
-    }
     /**
      * @return Generic text values status
      */
@@ -812,12 +813,34 @@ public class Attribute
 	this.bounds = null;
 	return this;
     }
+    public int length(){
+	if (null != this.children)
+	    return this.children.length;
+	else
+	    return 0;
+    }
+    public Attribute get(int idx){
+	if (null != this.children){
+	    if (-1 < idx && idx < this.children.length)
+		return this.children[idx];
+	}
+	return null;
+    }
+    public void clear(){
+	this.children = null;
+    }
+    public libra.Iterable<Attribute> sort(){
+	java.util.Arrays.sort(this.children);
+	return this;
+    }
     public Attribute add(Attribute at){
+	this.lists = null;
 	this.children = Attribute.Add(this.children,at);
-	/*
-	 */
 	return at;
     }
+    /**
+     * Overridden in subclasses like Symbol and Schematic
+     */
     public Attribute add(Attribute.Type type){
 	return this.add(new Attribute(type));
     }
@@ -831,6 +854,9 @@ public class Attribute
     }
     public Attribute last(Attribute.Type type){
 	return Attribute.Last(this.children,type);
+    }
+    public Attribute last(Class clas){
+	return Attribute.Last(this.children,clas);
     }
     public Attribute set(Layout.Dimension box){
 
@@ -848,11 +874,22 @@ public class Attribute
 	else
 	    throw new IllegalArgumentException();
     }
-    public java.util.Iterator<Attribute> iterator(){
+    public libra.Iterator<Attribute> iterator(){
 	return new Attribute.Iterator(this.children);
     }
-    public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
-	return new Attribute.Iterator(this.children,type);
+    public libra.Iterable<Attribute> list(Attribute.Type type){
+	if (null == this.lists)
+	    this.lists = new libra.Iterable[Attribute.Type.Count];
+
+	libra.Iterable<Attribute> list = this.lists[type.ordinal()];
+	if (null == list){
+	    list = new Attribute.Iterator(this.children,type);
+	    this.lists[type.ordinal()] = list;
+	}
+	return list;
+    }
+    public libra.Iterable<Attribute> list(Class clas){
+	return new Attribute.Iterator(this.children,clas);
     }
     public String toString(){
 	/*
@@ -972,7 +1009,7 @@ public class Attribute
 	}
     }
     public final static Attribute[] List(Attribute[] list, Attribute.Type type){
-	if (null == list || null == type)
+	if (null == list)
 	    return null;
 	else if (null == type)
 	    return list;
@@ -980,6 +1017,20 @@ public class Attribute
 	    Attribute[] typelist = null;
 	    for (Attribute at: list){
 		if (type == at.type)
+		    typelist = Attribute.Add(typelist,at);
+	    }
+	    return typelist;
+	}
+    }
+    public final static Attribute[] List(Attribute[] list, Class clas){
+	if (null == list)
+	    return null;
+	else if (null == clas)
+	    return list;
+	else {
+	    Attribute[] typelist = null;
+	    for (Attribute at: list){
+		if (clas.isAssignableFrom(at.getClass()))
 		    typelist = Attribute.Add(typelist,at);
 	    }
 	    return typelist;
@@ -1013,8 +1064,30 @@ public class Attribute
 	    return -1;
 	}
     }
+    public final static int IndexOf(Attribute[] list, Class clas){
+	if (null == clas)
+	    return -1;
+	else if (null == list)
+	    return -1;
+	else {
+	    final int len = list.length;
+	    for (int cc = 0; cc < len; cc++){
+		if (clas.isAssignableFrom(list[cc].getClass()))
+		    return cc;
+	    }
+	    return -1;
+	}
+    }
     public final static Attribute First(Attribute[] list, Attribute.Type type){
 	int idx = IndexOf(list,type);
+	if (-1 < idx)
+	    return list[idx];
+	else {
+	    return null;
+	}
+    }
+    public final static Attribute First(Attribute[] list, Class clas){
+	int idx = IndexOf(list,clas);
 	if (-1 < idx)
 	    return list[idx];
 	else {
@@ -1032,6 +1105,22 @@ public class Attribute
 	    for (int cc = 0; cc < len; cc++){
 		Attribute at = list[cc];
 		if (type == at.type)
+		    re = at;
+	    }
+	    return re;
+	}
+    }
+    public final static Attribute Last(Attribute[] list, Class clas){
+	if (null == clas)
+	    return null;
+	else if (null == list)
+	    return null;
+	else {
+	    Attribute re = null;
+	    final int len = list.length;
+	    for (int cc = 0; cc < len; cc++){
+		Attribute at = list[cc];
+		if (clas.isAssignableFrom(at.getClass()))
 		    re = at;
 	    }
 	    return re;
@@ -1145,17 +1234,17 @@ public class Attribute
     /**
      * 
      */
-    public static class Iterator
+    public static class Iterator<T extends Attribute>
 	extends Object
-	implements java.lang.Iterable<Attribute>, java.util.Iterator<Attribute>
+	implements libra.Iterator<T>
     {
 
-	private final Attribute[] list;
+	private final T[] list;
 	private final int length;
 	private int index;
 
 
-	public Iterator(Attribute[] list){
+	public Iterator(T[] list){
 	    super();
 	    if (null == list){
 		this.list = null;
@@ -1166,9 +1255,21 @@ public class Attribute
 		this.length = list.length;
 	    }
 	}
-	public Iterator(Attribute[] list, Attribute.Type type){
+	public Iterator(T[] list, Attribute.Type type){
 	    super();
-	    list = Attribute.List(list,type);
+	    list = (T[])Attribute.List(list,type);
+	    if (null == list){
+		this.list = null;
+		this.length = 0;
+	    }
+	    else {
+		this.list = list;
+		this.length = list.length;
+	    }
+	}
+	public Iterator(T[] list, Class clas){
+	    super();
+	    list = (T[])Attribute.List(list,clas);
 	    if (null == list){
 		this.list = null;
 		this.length = 0;
@@ -1180,40 +1281,82 @@ public class Attribute
 	}
 
 
+	public int length(){
+	    return this.length;
+	}
+	public T get(int idx){
+	    if (-1 < idx && idx < this.length)
+		return this.list[idx];
+	    else
+		return null;
+	}
 	public boolean hasNext(){
 	    return (this.index < this.length);
 	}
-	public Attribute next(){
+	public T next(){
 	    return this.list[this.index++];
 	}
 	public void remove(){
 	    throw new UnsupportedOperationException();
 	}
-	public java.util.Iterator<Attribute> iterator(){
+	public java.util.Iterator<T> iterator(){
+	    return this;
+	}
+	public libra.Iterable<T> sort(){
+	    if (null != this.list)
+		java.util.Arrays.sort(this.list);
 	    return this;
 	}
     }
     /**
      * 
      */
-    public static class Iterable
+    public static class Iterable<T extends Attribute>
 	extends Object
-	implements java.lang.Iterable<Attribute>
+	implements libra.Iterable<T>
     {
-	private final Attribute[] list;
+	private final T[] list;
+	private final int length;
+	private boolean sorted;
 
-
-	public Iterable(Attribute[] list){
+	public Iterable(T[] list){
 	    super();
 	    this.list = list;
+	    if (null != list)
+		this.length = list.length;
+	    else
+		this.length = 0;
 	}
-	public Iterable(Attribute[] list, Attribute.Type type){
+	public Iterable(T[] list, Attribute.Type type){
 	    super();
-	    this.list = Attribute.List(list,type);
+	    this.list = (T[])Attribute.List(list,type);
+	    if (null != this.list)
+		this.length = this.list.length;
+	    else
+		this.length = 0;
 	}
 
-	public java.util.Iterator<Attribute> iterator(){
+
+	public int length(){
+	    return this.length;
+	}
+	public T get(int idx){
+	    if (-1 < idx && idx < this.length)
+		return this.list[idx];
+	    else
+		return null;
+	}
+	public java.util.Iterator<T> iterator(){
 	    return new Attribute.Iterator(this.list);
+	}
+	public libra.Iterable<T> sort(){
+	    if (!this.sorted){
+		if (null != this.list){
+		    this.sorted = true;
+		    java.util.Arrays.sort(this.list);
+		}
+	    }
+	    return this;
 	}
     }
 }

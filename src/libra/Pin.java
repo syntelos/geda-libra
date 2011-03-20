@@ -59,9 +59,9 @@ public class Pin
 	}
     }
 
-    public final int number, sequence;
+    public int number, sequence;
 
-    public final boolean inverted;
+    public boolean inverted;
 
     protected String[] namein;
 
@@ -96,7 +96,9 @@ public class Pin
 	    Type.For(line[2])
 	};
     }
-
+    public Pin(){
+	super(Attribute.Type.P);
+    }
 
 
     public boolean add(String[] line){
@@ -397,74 +399,6 @@ public class Pin
 		copier[len+cc] = item.nextToken();
 	    }
 	    return copier;
-	}
-    }
-    public final static Pin[] Add(Pin[] list, Pin item){
-	if (null == item)
-	    return list;
-	else if (null == list)
-	    return new Pin[]{item};
-	else {
-	    int len = list.length;
-	    Pin[] copier = new Pin[len+1];
-	    System.arraycopy(list,0,copier,0,len);
-	    copier[len] = item;
-	    return copier;
-	}
-    }
-    /**
-     * 
-     */
-    public static class Iterator
-	extends Object
-	implements java.util.Iterator<Pin>
-    {
-
-	private final Pin[] list;
-	private final int length;
-	private int index;
-
-
-	public Iterator(Pin[] list){
-	    super();
-	    if (null == list){
-		this.list = null;
-		this.length = 0;
-	    }
-	    else {
-		this.list = list;
-		this.length = list.length;
-	    }
-	}
-
-
-	public boolean hasNext(){
-	    return (this.index < this.length);
-	}
-	public Pin next(){
-	    return this.list[this.index++];
-	}
-	public void remove(){
-	    throw new UnsupportedOperationException();
-	}
-    }
-    /**
-     * 
-     */
-    public static class Iterable
-	extends Object
-	implements java.lang.Iterable<Pin>
-    {
-	private final Pin[] list;
-
-
-	public Iterable(Pin[] list){
-	    super();
-	    this.list = list;
-	}
-
-	public java.util.Iterator<Pin> iterator(){
-	    return new Pin.Iterator(this.list);
 	}
     }
 }

@@ -50,8 +50,6 @@ public class Symbol
 
     public Layout layout;
 
-    public Pin[] pins;
-
     public String part, pack, footprint, version, 
 	author, description, documentation, license, path;
 
@@ -96,19 +94,6 @@ public class Symbol
     }
 
 
-    public Rectangle getBounds(){
-	Rectangle bounds = this.bounds;
-	if (null == bounds){
-	    bounds = super.getBounds();
-	    if (null != this.pins){
-		for (Pin pin: this.pins){
-		    bounds = bounds.union(pin);
-		}
-	    }
-	    this.bounds = bounds;
-	}
-	return bounds;
-    }
     public void write(File sym)
 	throws IOException
     {
@@ -122,7 +107,7 @@ public class Symbol
 
 		    out.println(this);
 
-		    for (Pin pin: this.pins){
+		    for (Pin pin: this.pins()){
 
 			out.println(pin);
 		    }
@@ -151,12 +136,6 @@ public class Symbol
 	}
 	else
 	    throw new IllegalStateException("Missing layout.");
-    }
-    public int count(){
-	if (null != this.pins)
-	    return this.pins.length;
-	else
-	    return 0;
     }
     public String getPart(){
 	if (null != this.part)
@@ -223,12 +202,11 @@ public class Symbol
 	    return true;
 	case Headline:
 	    return false;
-	case Pin:
-	    if (null == this.pins)
-		this.add(new Pin(line));
-	    else {
-		Pin last = (Pin)this.pins[this.pins.length-1];
-		if (!last.add(line))
+	case Pin:{
+		Pin last = (Pin)this.last(Attribute.Type.P);
+		if (null == last)
+		    this.add(new Pin(line));
+		else if (!last.add(line))
 		    this.add(new Pin(line));
 	    }
 	    return false;
@@ -240,21 +218,28 @@ public class Symbol
 	    throw new Error(row.name());
 	}
     }
-    public void add(Pin p){
-
-	this.pins = Pin.Add(this.pins,p);
+    @Override
+    public Attribute add(Attribute.Type type){
+	if (Attribute.Type.P == type)
+	    return this.add(new Pin());
+	else
+	    return this.add(new Attribute(type));
     }
     public Pin getPin(int num){
 	final int seq = (num-1);
-	if (-1 < seq && seq < this.count())
-	    return this.pins[seq];
+	libra.Iterable<Pin> pins = this.pins().sort();
+	if (-1 < seq && seq < pins.length())
+	    return pins.get(seq);
 	else
 	    throw new IllegalArgumentException(String.valueOf(num));
     }
     public boolean layout(){
-	if (null != this.pins){
-	    java.util.Arrays.sort(this.pins);
+	libra.Iterable<Pin> pins = this.pins().sort();
+
+	if (0 < pins.length()){
+
 	    if (null != this.layout){
+
 		final Layout layout = this.layout;
 		/*
 		 * Initial layout of pins and their labels
@@ -359,8 +344,8 @@ public class Symbol
 	}
 	b.init();
 
-	for (Attribute ap: this.pins()){
-	    Pin p = (Pin)ap;
+	for (Pin p: this.pins()){
+
 	    switch(p.getPosition(this.layout)){
 	    case T:
 		b.top();
@@ -408,9 +393,12 @@ public class Symbol
     @Override
     public boolean markup(Attribute parent){
 
-	if (null != this.pins){
-	    java.util.Arrays.sort(this.pins);
+	libra.Iterable<Pin> list = this.pins().sort();
+
+	if (0 < list.length()){
+
 	    if (null != this.layout){
+
 		Layout.Dimension box = this.layout.getSize();
 
 		final Attribute bb = this.set(box);
@@ -469,30 +457,9 @@ public class Symbol
 	else
 	    return false;
     }
-    public java.lang.Iterable<Attribute> pins(){
-	return this.iterator(Attribute.Type.P);
-    }
-    public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
-	if (Attribute.Type.P == type && null != this.pins)
-	    return new Attribute.Iterable(this.pins);
-	else
-	    return super.iterator(type);
-    }
-    public Rectangle getBounds(Attribute.Type type){
-	if (Attribute.Type.P == type && null != this.pins){
-	    Attribute[] list = this.pins;
-
-	    Rectangle bounds = list[0].normalize();
-	    final int count = list.length;
-	    for (int cc = 1; cc < count; cc++){
-		Attribute child = list[cc];
-		if (child.isNotEmpty())
-		    bounds = bounds.union(child);
-	    }
-	    return bounds;
-	}
-	else
-	    return super.getBounds(type);
+    public libra.Iterable<Pin> pins(){
+	libra.Iterable list = this.list(Attribute.Type.P);
+	return (libra.Iterable<Pin>)list;
     }
     public String toString(){
 	if (0 < Debug){
@@ -548,22 +515,22 @@ public class Symbol
     }
     public java.lang.Iterable<Attribute> left(){
 	if (null == this.left)
-	    this.left = new Label.Iterable(this.pins,Layout.Position.L);
+	    this.left = new Label.Iterable(this.pins(),Layout.Position.L);
 	return this.left;
     }
     public java.lang.Iterable<Attribute> bottom(){
 	if (null == this.bottom)
-	    this.bottom = new Label.Iterable(this.pins,Layout.Position.B);
+	    this.bottom = new Label.Iterable(this.pins(),Layout.Position.B);
 	return this.bottom;
     }
     public java.lang.Iterable<Attribute> right(){
 	if (null == this.right)
-	    this.right = new Label.Iterable(this.pins,Layout.Position.R);
+	    this.right = new Label.Iterable(this.pins(),Layout.Position.R);
 	return this.right;
     }
     public java.lang.Iterable<Attribute> top(){
 	if (null == this.top)
-	    this.top = new Label.Iterable(this.pins,Layout.Position.T);
+	    this.top = new Label.Iterable(this.pins(),Layout.Position.T);
 	return this.top;
     }
     public java.lang.Iterable<Rectangle> intersects(){
@@ -572,14 +539,16 @@ public class Symbol
 	return this.intersectsI;
     }
     public Pin first(Layout.Position s){
-	if (null != this.pins && null != this.layout)
-	    return this.pins[this.layout.first(s)];
+	libra.Iterable<Pin> pins = this.pins().sort();
+	if (0 < pins.length() && null != this.layout)
+	    return pins.get(this.layout.first(s));
 	else
 	    throw new IllegalStateException();
     }
     public Pin last(Layout.Position s){
-	if (null != this.pins && null != this.layout)
-	    return this.pins[this.layout.last(s)];
+	libra.Iterable<Pin> pins = this.pins().sort();
+	if (0 < pins.length() && null != this.layout)
+	    return pins.get(this.layout.last(s));
 	else
 	    throw new IllegalStateException();
     }
@@ -588,7 +557,7 @@ public class Symbol
      */
     public Rectangle getInnerBoundsTitleblock(){
 	Rectangle bounds = null;
-	for (Attribute box : this.iterator(Attribute.Type.B)){
+	for (Attribute box : this.list(Attribute.Type.B)){
 	    if (box.x1 == box.y1){
 		if (null == bounds)
 		    bounds = box.normalize();
@@ -611,7 +580,7 @@ public class Symbol
      */
     public Rectangle getTitlebox(){
 	Rectangle bounds = null;
-	for (Attribute box : this.iterator(Attribute.Type.B)){
+	for (Attribute box : this.list(Attribute.Type.B)){
 	    if (box.x1 != box.y1){
 		if (null == bounds)
 		    bounds = box.normalize();
@@ -628,7 +597,6 @@ public class Symbol
 	super.copy(that);
 
 	this.layout = that.layout;
-	this.pins = that.pins;
 	this.part = that.part;
 	this.pack = that.pack;
 	this.footprint = that.footprint;

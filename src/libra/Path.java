@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
  */
 public class Path
     extends Object
-    implements Iterable<Path.Code>
+    implements java.lang.Iterable<Path.Code>
 {
     public enum Token {
 	Unknown, Coordinate, M, m, Z, z, L, l, H, h, V, v, C, c, S, s, Q, q, T, t, A, a;
@@ -426,8 +426,8 @@ public class Path
      */
     public final static class Parser
         extends Object
-        implements Iterable<Path.Token>,
-                   Iterator<Path.Token>
+        implements java.lang.Iterable<Path.Token>,
+                   java.util.Iterator<Path.Token>
     {
 
         private final char[] string;
@@ -548,7 +548,7 @@ public class Path
         public void remove(){
             throw new UnsupportedOperationException();
         }
-        public Iterator<Path.Token> iterator(){
+        public java.util.Iterator<Path.Token> iterator(){
             return this;
         }
     }

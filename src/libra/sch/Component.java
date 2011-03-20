@@ -15,10 +15,6 @@ public class Component
     extends Attribute
 {
 
-    public final String name;
-
-    protected Symbol symbol;
-
     public Layout.Cursor.Relation layout;
 
 
@@ -28,26 +24,30 @@ public class Component
     public Component(String[] line)
 	throws IOException
     {
-	this(Lib.Basename(line[0]));
-	this.symbol = Lib.For(this.name);
-	this.componentName = this.name+".sym";
-	this.componentSymbol = this.symbol;
+	this(line[0]);
+
 	this.selectable = 1;
 
-	this.copy(this.symbol.getBounds());
+	this.copy(this.componentSymbol.getBounds());
 
 	this.add(line);
     }
-    protected Component(String name){
+    public Component(String name){
 	super(Attribute.Type.C);
-	this.name = name;
+	this.name = Lib.Basename(name);
+	this.componentName = Lib.SymFileName(this.name);
+	this.componentSymbol = Lib.For(this.name);
     }
+    public Component(){
+	super(Attribute.Type.C);
+    }
+
 
     public boolean add(String[] line)
 	throws IOException
     {
 	if (this.name.equals(line[0])){
-	    this.add(new Net(this.symbol,line));
+	    this.add(new Net(this.componentSymbol,line));
 	    return true;
 	}
 	else
@@ -56,14 +56,10 @@ public class Component
     public void layout1(Component prev, Layout.Cursor cursor){
 
 	this.layout = cursor.layout1(prev,this);
-
-	///System.err.printf("L1 %s %s\n",this.name,this.rectString());
     }
     public void layout3(Component prev, Layout.Cursor cursor){
 
 	cursor.layout3(prev,this);
-
-	///System.err.printf("L3 %s %s\n",this.name,this.rectString());
     }
     @Override
     public boolean markup(Attribute parent){

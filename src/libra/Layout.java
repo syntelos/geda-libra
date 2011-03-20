@@ -766,7 +766,7 @@ public class Layout {
     public int last(Layout.Position s){
 	return this.layout.last(s);
     }
-    public final Iterable<Attribute> intersect(Symbol s, Position pos){
+    public final java.lang.Iterable<Attribute> intersect(Symbol s, Position pos){
 	switch(pos){
 	case T:{
 	    Attribute L0 = s.first(Position.L).getLabel();

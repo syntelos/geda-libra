@@ -34,7 +34,6 @@ public class Net
 	throws IOException
     {
 	super(SymName(signal));
-	this.componentName = Lib.SymFileName(this.name);
 	this.pin = pin;
 	this.basename = BaseName(signal);
 	this.netname = NetName(signal);
@@ -47,7 +46,8 @@ public class Net
 
 	    if (null != this.targetPin){
 
-		if (null == this.symbol){
+		if (null == this.componentSymbol){
+
 		    this.generateNetSymbolTo(targetSymbol);
 		}
 	    }
@@ -116,19 +116,15 @@ public class Net
 	throws IOException
     {
 
-	if (null != this.symbol){
-	    this.symbol.destroy();
-	}
-
-	this.symbol = new Symbol("P 200 0 200 200 1 0 0");
-	this.symbol.add(Attribute.Type.T).text("pinseq",0).loc(this.symbol);
-	this.symbol.add(Attribute.Type.T).text("pintype",this.targetPin.getType()).loc(this.symbol);
-	this.symbol.add(Attribute.Type.T).text("pinnumber",1).loc(this.symbol);
-	this.symbol.add(Attribute.Type.T).text("pinlabel",this.basename).loc(this.symbol);
-	Attribute underbar = this.symbol.add(Attribute.Type.L).line(50, 200, 350, 200, 3);
-	Attribute label = this.symbol.add(Attribute.Type.T).text(null,this.basename,9,8,1).show(Attribute.Show.Value).layoutTextToUnderline(underbar);
-	this.symbol.add(Attribute.Type.T).text("net",this.netname,8,8,0).loc(label);
-	this.symbol.write(Lib.Net(this.name));
+	this.componentSymbol = new Symbol("P 200 0 200 200 1 0 0");
+	this.componentSymbol.add(Attribute.Type.T).text("pinseq",0).loc(this.componentSymbol);
+	this.componentSymbol.add(Attribute.Type.T).text("pintype",this.targetPin.getType()).loc(this.componentSymbol);
+	this.componentSymbol.add(Attribute.Type.T).text("pinnumber",1).loc(this.componentSymbol);
+	this.componentSymbol.add(Attribute.Type.T).text("pinlabel",this.basename).loc(this.componentSymbol);
+	Attribute underbar = this.componentSymbol.add(Attribute.Type.L).line(50, 200, 350, 200, 3);
+	Attribute label = this.componentSymbol.add(Attribute.Type.T).text(null,this.basename,9,8,1).show(Attribute.Show.Value).layoutTextToUnderline(underbar);
+	this.componentSymbol.add(Attribute.Type.T).text("net",this.netname,8,8,0).loc(label);
+	this.componentSymbol.write(Lib.Net(this.name));
 
 	return this;
     }

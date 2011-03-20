@@ -57,8 +57,6 @@ public class Schematic
 
     public char size;
 
-    public Component[] components;
-
 
     public Schematic(){
 	super(Attribute.Type.C);
@@ -106,7 +104,7 @@ public class Schematic
 
 		    out.println(this);
 
-		    for (Component component: this.components){
+		    for (Component component: this.components()){
 
 			out.println(component);
 		    }
@@ -152,12 +150,11 @@ public class Schematic
 	    return true;
 	case Headline:
 	    return false;
-	case Net:
-	    if (null == this.components)
-		this.add(new Component(line));
-	    else {
-		Component last = (Component)this.components[this.components.length-1];
-		if (!last.add(line))
+	case Net:{
+		Component last = (Component)this.last(Component.class);
+		if (null == last)
+		    this.add(new Component(line));
+		else if (!last.add(line))
 		    this.add(new Component(line));
 	    }
 	    return false;
@@ -165,21 +162,12 @@ public class Schematic
 	    throw new Error(row.name());
 	}
     }
-    public void add(Component c){
-
-	this.components = Component.Add(this.components,c);
-    }
-    public int size(){
-	if (null != this.components)
-	    return this.components.length;
+    @Override
+    public Attribute add(Attribute.Type type){
+	if (Attribute.Type.C == type)
+	    return this.add(new Component());
 	else
-	    return 0;
-    }
-    public Component get(int idx){
-	if (-1 < idx && idx < this.size())
-	    return this.components[idx];
-	else
-	    return null;
+	    return this.add(new Attribute(type));
     }
     public char getSize(){
 	return this.size;
@@ -202,12 +190,13 @@ public class Schematic
 	 * In order to permit "Size" to be optional, we'll first do a
 	 * layout and then re-layout into a titleblock.
 	 */
-	final int count = this.size();
+	libra.Iterable<Component> list = this.components();
+	final int count = list.length();
 	if (0 < count){
 	    Rectangle[] components = new Rectangle[count];
 	    {
 		for (int cc = 0; cc < count; cc++){
-		    components[cc] = this.get(cc).getBounds();
+		    components[cc] = list.get(cc).getBounds();
 		}
 	    }
 	    /*
@@ -251,7 +240,7 @@ public class Schematic
 
 		for (int cc = 0; cc < count; cc++){
 
-		    next = this.get(cc);
+		    next = list.get(cc);
 
 		    cursor.small(small[cc]);
 
@@ -288,7 +277,7 @@ public class Schematic
 
 		for (int cc = 0; cc < count; cc++){
 
-		    next = this.get(cc);
+		    next = list.get(cc);
 
 		    cursor.small(small[cc]);
 
@@ -306,36 +295,15 @@ public class Schematic
 
 	boolean re = true;
 
-	for (Component component: this.components){
+	for (Component component: this.components()){
 
 	    if (!component.markup(this))
 		re = false;
 	}
 	return re;
     }
-    public java.lang.Iterable<Attribute> components(){
-	return this.iterator(Attribute.Type.C);
-    }
-    public java.lang.Iterable<Attribute> iterator(Attribute.Type type){
-	if (Attribute.Type.C == type && null != this.components)
-	    return new Attribute.Iterable(this.components);
-	else
-	    return super.iterator(type);
-    }
-    public Rectangle getBounds(Attribute.Type type){
-	if (Attribute.Type.C == type && null != this.components){
-	    Attribute[] list = this.components;
-
-	    Rectangle bounds = list[0].normalize();
-	    final int count = list.length;
-	    for (int cc = 1; cc < count; cc++){
-		Attribute child = list[cc];
-		if (child.isNotEmpty())
-		    bounds = bounds.union(child);
-	    }
-	    return bounds;
-	}
-	else
-	    return super.getBounds(type);
+    public libra.Iterable<Component> components(){
+	libra.Iterable list = this.list(Attribute.Type.C);
+	return (libra.Iterable<Component>)list;
     }
 }

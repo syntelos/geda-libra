@@ -15,7 +15,7 @@ public abstract class Label
 	private final Attribute[] list;
 	public final Layout.Position pos;
 
-	public Iterable(Pin[] plist, Layout.Position pos){
+	public Iterable(libra.Iterable<Pin> plist, Layout.Position pos){
 	    super();
 	    if (null != pos){
 		this.pos = pos;

@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  */
 public class GAF
     extends libra.io.FileIO
-    implements Iterable<Attribute>
+    implements java.lang.Iterable<Attribute>
 {
     public final String name;
 
